@@ -173,7 +173,7 @@ class Trainer(nn.Module):
     lr = lr0 * ((1 - float(iter) / max_iter) ** power)
     if min_lr is not None:
       lr = max(min_lr, lr)
-    optim.para_groups[0]["lr"] = lr
+    optim.param_groups[0]["lr"] = lr
     return lr
 
   def clip_grad_norm(self, parameters, clip_norm):
@@ -187,21 +187,30 @@ class Trainer(nn.Module):
     return t.LongTensor(data).cuda() if self.is_cuda else t.LongTensor(data)
 
   def record_params(self):
-    record_info = {"batch_num": self.total_batch,
-                   "vocab size": self.vocab_size,
-                   "embedding dim": self.embed_dim,
-                   "batch size": self.bsize,
-                   "total epoch number": self.epoch_num,
-                   "generator learning rate": self.g_lr0,
-                   "discriminator learning rate": self.d_lr0,
-                   "answer_max_len": self.max_ans_len,
-                   "dialog_max_len": self.max_dialog_len,
-                   "next_token_samples": self.num_samples,
-                   "n_times": self.n_times,
-                   "use_cuda": True if self.is_cuda else False}
+    # record_info = {"batch_num": self.total_batch,
+    #                "vocab size": self.vocab_size,
+    #                "embedding dim": self.embed_dim,
+    #                "batch size": self.bsize,
+    #                "total epoch number": self.epoch_num,
+    #                "generator learning rate": self.g_lr0,
+    #                "discriminator learning rate": self.d_lr0,
+    #                "answer_max_len": self.max_ans_len,
+    #                "dialog_max_len": self.max_dialog_len,
+    #                "next_token_samples": self.num_samples,
+    #                "n_times": self.n_times,
+    #                "use_cuda": True if self.is_cuda else False}
+    record_info = {}
+    base_type = (str, int, float, bool)
+    for attr_name in dir(self):
+      if attr_name.startswith("_"):
+        continue
+      attr_value = getattr(self, attr_name)
+      if isinstance(attr_value, base_type):
+        record_info[attr_name] = attr_value
+
+    pprint.pprint(record_info)
     with open(self.record_file, "w") as f:
       json.dump(record_info, f, separators=("\n", " : "))
-    pprint.pprint(record_info)
 
   def batch_data_prep(self, index):
     start = index * self.bsize
@@ -229,7 +238,7 @@ class Trainer(nn.Module):
               format(time.strftime("%Y-%m-%d_%H:%M:%S",
                                    time.localtime()), epoch, batch, self.lr, loss, g_acc, d_acc))
       try:
-        f.write("r: {}\n g: {}\n".format(r, g))
+        f.write("r: {}\ng: {}\n".format(r, g))
       except UnicodeDecodeError:
         print("Encode error occured when writing sentence: \n{}!".format(g))
 
@@ -272,5 +281,5 @@ if __name__ == "__main__":
   print("data loaded...")
 
   trainer = Trainer(args, mode="train")
-  trainer()
+  trainer.record_params()
   # trainer.inference("./model/model-2020-07-02_10-34-32/model-199")

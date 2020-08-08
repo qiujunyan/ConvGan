@@ -11,12 +11,13 @@ from codes.train import Trainer
 class PreTrainer(Trainer):
   def __init__(self, args, mode="p"):
     super(PreTrainer, self).__init__(args, mode)
+    self.epoch_num = 100
 
   def forward(self):
     print("*" * 20 + "device: {}".format("gpu" if self.is_cuda else "cpu") + "*" * 20)
     self.total_batch = math.ceil(self.data_size / self.bsize)
     print("total batch: {}".format(self.total_batch))
-    # self.load_generator("./pretrain/generator/model/model-2020-08-07_16-45-37/model-9-41")
+    # self.load_generator("./pretrain/generator/model/model-2020-08-07_23-00-42/model-3-10")
 
     self.model_dir = os.path.join("./pretrain/generator/model/", "model-{}"
                                   .format(time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())))
@@ -38,7 +39,7 @@ class PreTrainer(Trainer):
       self.lr = self.adjust_lr(self.g_lr0, self.g_optim,
                                epoch * self.total_batch + batch,
                                self.epoch_num * self.total_batch,
-                               min_lr=1e-4, warmup=30, warmup_lr=1e-4)
+                               min_lr=1e-4, warmup=0, warmup_lr=1e-4)
       logits = self.generator(dialog_datas,
                               init_dec_input_index=ans_datas,
                               is_pretraining=True)
@@ -50,21 +51,26 @@ class PreTrainer(Trainer):
       loss.backward()
       self.g_optim.step()
 
-    acc = self.get_accuracy(gen_sents, ans_datas[:, 1:])
-    self.log_record(epoch, batch, loss, gen_sents, ans_datas,
-                    g_acc=acc, ans_lens=ans_lens)
-    self.model_save(epoch, batch)
+      if batch % 10 == 0:
+        acc = self.get_accuracy(gen_sents, ans_datas[:, 1:])
+        self.log_record(epoch, batch, loss, gen_sents, ans_datas,
+                        g_acc=acc, ans_lens=ans_lens)
+        self.model_save(epoch, batch)
+    print("\n")
 
   def get_loss(self, labels, logits, parameters=None):
-    def _get_onehot(index):
+    def _get_onehot(index, res=0):
       ret = t.eye(self.vocab_size)[index]
+      ret += (1 - ret) * (res / (self.embed_dim - 1)) - ret * res
       return ret.cuda() if self.is_cuda else is_cuda
 
     reg_term = 0
     if parameters is not None:
       for param in parameters:
         reg_term += t.norm(param)
-    return -t.mean(_get_onehot(labels[:, 1:]) * t.log(logits + 1e-8)) + self.reg_rate * reg_term
+
+    return -t.mean(_get_onehot(labels[:, 1:], res=0.2) * t.log(logits + 1e-8)) + \
+           self.reg_rate * reg_term
 
 
 if __name__ == "__main__":

@@ -35,6 +35,7 @@ class Transformer(nn.Module):
         outputs = self.dropout(outputs + self.activation_function(self.feed_forward[i](self.layer_norm(outputs))))
         query = outputs
       output = self.output_linear(query[:, -1, :])
+      output = self.layer_norm(output, False)
       dec_output = t.softmax(output, -1)
       return dec_output
     else:
@@ -88,11 +89,11 @@ class MultiHeadAttention(nn.Module):
     # return self.linear_out(attention)
 
   def scaled_dot_production(self, Q, K, V, ori_key, sequence_padding):
-    # embed_dim = t.Tensor([self.embed_dim]).cuda() if Q.is_cuda else t.Tensor([self.embed_dim])
-    # attn_weight = t.matmul(Q, K.permute(0, 2, 1)) / t.sqrt(embed_dim)
+    embed_dim = t.Tensor([self.embed_dim]).cuda() if Q.is_cuda else t.Tensor([self.embed_dim])
+    attn_weight = t.matmul(Q, K.permute(0, 2, 1)) / t.sqrt(embed_dim)
     # if scale attention weight, it could be easier to train model,
     # but also be inditinguishable after going through softmax function
-    attn_weight = t.matmul(Q, K.permute(0, 2, 1))  # B*n * L_q * L_k
+    # attn_weight = t.matmul(Q, K.permute(0, 2, 1))  # B*n * L_q * L_k
     masks = t.zeros_like(attn_weight)
     if ori_key is not None:
       masks = self.get_padding_masks(Q, ori_key)  # B*n * L_q * L_k
@@ -139,9 +140,10 @@ class LayerNormalization(nn.Module):
     # inputs = inputs.view(size[0], -1)
     sigma = t.std(inputs, -1)
     mean = t.mean(inputs, -1)
-    output = (inputs - mean.unsqueeze(-1)) / (t.sqrt(sigma.unsqueeze(-1)) + epsilon)
+    output = (inputs - mean.unsqueeze(-1)) / (sigma.unsqueeze(-1) + epsilon)
     if self.is_train:
-      output = self.alpha.repeat(size[1], size[2]) * output + self.beta.repeat(size[1], size[2])
+      output = self.alpha.repeat(size[-2], size[-1]) * output + \
+               self.beta.repeat(size[-2], size[-1])
     return output
 
 

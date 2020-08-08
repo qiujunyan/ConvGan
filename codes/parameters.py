@@ -1,14 +1,14 @@
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
-parser.add_argument("--batch_size", type=int, default=50)
+parser.add_argument("--batch_size", type=int, default=40)
 parser.add_argument("--epoch_num", type=int, default=1000)
 parser.add_argument("--embed_dim", type=int, default=64)
 parser.add_argument("--hidden_dim", type=int, default=64)
 parser.add_argument("--ans_max_len", type=int, default=40)
 parser.add_argument("--dia_max_len", type=int, default=400)
 parser.add_argument("--channels", type=list, default=[16, 32])
-parser.add_argument("--g_lr", type=float, default=1e-3)
+parser.add_argument("--g_lr", type=float, default=1e-2)
 parser.add_argument("--d_lr", type=float, default=1e-2)
 parser.add_argument("--clip", type=float, default=1)
 parser.add_argument("--decay_rate", type=float, default=0.2)
