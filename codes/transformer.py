@@ -21,6 +21,7 @@ class Transformer(nn.Module):
     query = self.pe(query)
     if mode.lower() in ["e", "encoder", "encode"]:
       for i in range(self.num_layers):
+        
         query = self.layer_norm(query)
         outputs = self.dropout(query + self.multi_head_attention[i](query, query, query, ori_k))
         outputs = self.dropout(outputs + self.activation_function(self.feed_forward[i](self.layer_norm(outputs))))
@@ -28,10 +29,12 @@ class Transformer(nn.Module):
       return query
     elif mode.lower() in ["d", "decoder", "decode"]:
       for i in range(self.num_layers):
+        # sublayer 1
         query = self.layer_norm(query)
         query = self.dropout(query + self.multi_head_attention[i](query, query, query))
-        outputs = self.dropout(
-          query + self.multi_head_attention[i](self.layer_norm(query), key, value, ori_k))  # + query
+        # sublsyer 2
+        outputs = self.dropout(query + self.multi_head_attention[i](self.layer_norm(query), key, value, ori_k))  # + query
+        # sublayer 3
         outputs = self.dropout(outputs + self.activation_function(self.feed_forward[i](self.layer_norm(outputs))))
         query = outputs
       output = self.output_linear(query[:, -1, :])
