@@ -5,7 +5,7 @@ from codes.transformer import Transformer
 
 
 class Generator(nn.Module):
-  def __init__(self, embedding, ans_max_len, special_tokens,
+  def __init__(self, embedding, ans_max_len, dropout, special_tokens,
                hidden_dim=64, num_layers=1, num_heads=8,
                n_times=20, is_cuda=True, mode="train"):
     super(Generator, self).__init__()
@@ -19,13 +19,14 @@ class Generator(nn.Module):
     self.pad_id = special_tokens["<PAD>"]
     self.bos_id = special_tokens["<BOS>"]
     self.is_cuda = is_cuda
+    self.dropout = dropout
     self.curriculum_rate = 0  # used to control the probability of replacing the true tokens with generated ones.
     self.n_times = n_times
 
-    self.encoder = Transformer(self.embed_dim, self.vocab_size,
-                               self.hidden_dim, self.num_heads, self.num_layers)
-    self.decoder = Transformer(self.embed_dim, self.vocab_size,
-                               self.hidden_dim, self.num_heads, self.num_layers)
+    self.encoder = Transformer(self.embed_dim, self.vocab_size, self.hidden_dim,
+                               self.num_heads, self.num_layers, self.dropout)
+    self.decoder = Transformer(self.embed_dim, self.vocab_size, self.hidden_dim,
+                               self.num_heads, self.num_layers, self.dropout)
     if self.is_cuda:
       self = self.cuda()
 

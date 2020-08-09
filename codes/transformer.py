@@ -3,7 +3,8 @@ from torch import nn
 
 
 class Transformer(nn.Module):
-  def __init__(self, embed_dim, vocab_size, hidden_dim=64, num_heads=8, num_layers=6):
+  def __init__(self, embed_dim, vocab_size, hidden_dim=64,
+               num_heads=8, num_layers=6, dropout=0):
     super(Transformer, self).__init__()
     self.num_layers = num_layers
 
@@ -14,16 +15,17 @@ class Transformer(nn.Module):
     self.feed_forward = nn.ModuleList([nn.Linear(hidden_dim, hidden_dim)] * num_layers)
     self.activation_function = t.relu
     self.output_linear = nn.Linear(hidden_dim, vocab_size)
-    self.dropout = nn.Dropout(0.3)
+    self.dropout = nn.Dropout(dropout)
 
   def forward(self, query, key=None, value=None, ori_k=None, mode="e"):
     '''post layer normalization'''
     query = self.pe(query)
     if mode.lower() in ["e", "encoder", "encode"]:
       for i in range(self.num_layers):
-        
+        # sublayer 1
         query = self.layer_norm(query)
         outputs = self.dropout(query + self.multi_head_attention[i](query, query, query, ori_k))
+        # sublayer 2
         outputs = self.dropout(outputs + self.activation_function(self.feed_forward[i](self.layer_norm(outputs))))
         query = outputs
       return query
@@ -33,7 +35,8 @@ class Transformer(nn.Module):
         query = self.layer_norm(query)
         query = self.dropout(query + self.multi_head_attention[i](query, query, query))
         # sublsyer 2
-        outputs = self.dropout(query + self.multi_head_attention[i](self.layer_norm(query), key, value, ori_k))  # + query
+        outputs = self.dropout(
+          query + self.multi_head_attention[i](self.layer_norm(query), key, value, ori_k))  # + query
         # sublayer 3
         outputs = self.dropout(outputs + self.activation_function(self.feed_forward[i](self.layer_norm(outputs))))
         query = outputs

@@ -44,6 +44,7 @@ class Trainer(nn.Module):
     self.epoch_num = args.epoch_num
     self.g_lr0 = args.g_lr
     self.d_lr0 = args.d_lr
+    self.g_dropout = args.dropout
     self.channels = args.channels
     self.decay_rate = args.decay_rate
     self.n_times = args.n_times
@@ -51,12 +52,11 @@ class Trainer(nn.Module):
     self.clip = args.clip
     self.num_samples = args.num_samples
     self.curriculum_rate = args.curriculum_rate
-    self.reg_rate = args.reg_rate
     self.total_batch = math.ceil(self.data_size / self.bsize)
 
     self.embedding = nn.Embedding(self.vocab_size, self.embed_dim,
                                   padding_idx=self.special_tokens[self.pad_tok])
-    self.generator = Generator(self.embedding, self.max_ans_len,
+    self.generator = Generator(self.embedding, self.max_ans_len, self.g_dropout,
                                self.special_tokens, is_cuda=self.is_cuda)
     self.discriminator = Discriminator(self.embedding,
                                        seq_len=self.max_ans_len + self.max_dialog_len,
@@ -137,9 +137,7 @@ class Trainer(nn.Module):
         generator_input = self.generator(dialogs=dialog_datas,
                                          mode=2,
                                          init_dec_input_index=generator_input)
-        print("\{{}: {:.3}\}".format(i, neg_state_value.item()), end=" ")
-        if i + 1 % 10 == 0:
-          print("\n")
+        print("({}: {:.3})".format(i, neg_state_value.item()), end=" ")
 
     #  discriminator training round
     print("\n")
@@ -281,5 +279,5 @@ if __name__ == "__main__":
   print("data loaded...")
 
   trainer = Trainer(args, mode="train")
-  trainer.record_params()
+  trainer()
   # trainer.inference("./model/model-2020-07-02_10-34-32/model-199")

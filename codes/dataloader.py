@@ -15,14 +15,14 @@ class DataLoader(object):
   def __init__(self, data_dir, ans_max_len, dialog_max_len=None):
     self.unkown_tok, self.pad_tok, self.sep_tok, self.bos_tok, self.eos_tok, self.time_tok, self.digit_tok = \
       ["<UNKNOWN>", "<PAD>", "<SEP>", "<BOS>", "<EOS>", "<T>", "<D>"]
-    self.special_tokens = {self.unkown_tok: 0,
-                           self.pad_tok: 1, self.sep_tok: 2, self.bos_tok: 3,
+    self.special_tokens = {self.unkown_tok: 1,
+                           self.pad_tok: 0, self.sep_tok: 2, self.bos_tok: 3,
                            self.eos_tok: 4, self.time_tok: 5, self.digit_tok: 6}
     self.dir = data_dir
     self.ans_max_len = ans_max_len
     self.dialog_max_len = dialog_max_len
 
-    self.is_load_dict = True
+    self.is_load_dict = False
     self.data_tokens = self.preprocess(self.dir)
     self.token_id, self.id_token = self.dict_gen()
     self.data_ids, self.seq_lens = self.tokens2id()
@@ -108,13 +108,14 @@ class DataLoader(object):
       except FileNotFoundError:
         print("Dictionary file not found! Starting to regenerate.")
 
-    tokens = self.preprocess("../data/mutual/train/1")
-    tokens.extend(self.preprocess("../data/mutual/train/2"))
+    tokens = self.preprocess("./data/mutual/train/1")
+    tokens.extend(self.preprocess("./data/mutual/train/2"))
     diction = Counter()
     for data in tqdm(tokens):
       diction += Counter(data["dialogue"])
       diction += Counter(data["true_ans"])
-      diction += Counter(data["wrong_ans"])
+      for item in data["wrong_ans"]:
+        diction += Counter(item)
     diction = {**self.special_tokens, **dict(diction.most_common())}
     # diction = dict(filter(lambda x: x[1] > 10, diction.items()))  # set unusual tokens as <UNKNOWN>
 
@@ -198,4 +199,3 @@ class DataLoader(object):
 
 if __name__ == "__main__":
   dl = DataLoader(args.dev_dir, args.ans_max_len, args.dia_max_len)
-  dl()
