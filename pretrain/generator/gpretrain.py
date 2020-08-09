@@ -12,6 +12,8 @@ class PreTrainer(Trainer):
   def __init__(self, args, mode="p"):
     super(PreTrainer, self).__init__(args, mode)
     self.epoch_num = 100
+    self.g_lr0 = 1e-3
+    self.reg_rate = 0
 
   def forward(self):
     print("*" * 20 + "device: {}".format("gpu" if self.is_cuda else "cpu") + "*" * 20)
@@ -49,6 +51,9 @@ class PreTrainer(Trainer):
       # optimization
       self.g_optim.zero_grad()
       loss.backward()
+      # some error occurs when device is gpu, gradient of
+      # embedding of padding index goes nan.
+      self.embedding.weight.grad[self.special_tokens[self.pad_tok]] = 0
       self.g_optim.step()
 
       if batch % 10 == 0:
@@ -62,7 +67,7 @@ class PreTrainer(Trainer):
     def _get_onehot(index, res=0):
       ret = t.eye(self.vocab_size)[index]
       ret += (1 - ret) * (res / (self.embed_dim - 1)) - ret * res
-      return ret.cuda() if self.is_cuda else is_cuda
+      return ret.cuda() if self.is_cuda else ret
 
     reg_term = 0
     if parameters is not None:
