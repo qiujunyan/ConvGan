@@ -11,7 +11,7 @@ from codes.train import Trainer
 class Pretrain(Trainer):
   def __init__(self, args):
     super(Pretrain, self).__init__(args, mode="p")
-    self.d_lr0 = 0.1
+    self.g_lr0 = 0.1
     self.neg_datas = np.array(self.data_loader.data_ids["wrong_ans"])
     del (self.generator)
 
@@ -28,7 +28,7 @@ class Pretrain(Trainer):
 
   def train_one_epoch(self, epoch):
     self.lr = self.adjust_lr(self.d_lr0, epoch, self.epoch_num,
-                             warmup=10, warmup_lr=1e-2,
+                             warmup=50, warmup_lr=1e-3,
                              power=10, min_lr=1e-7)
     for batch in range(self.total_batch):
       self.d_optim.zero_grad()

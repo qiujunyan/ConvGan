@@ -3,6 +3,7 @@ import os
 import time
 
 import torch as t
+from torch import nn
 
 from codes.parameters import args
 from codes.train import Trainer
@@ -12,11 +13,12 @@ class PreTrainer(Trainer):
   def __init__(self, args, mode="p"):
     super(PreTrainer, self).__init__(args, mode)
     self.epoch_num = 100
+    self.cross_entropy_loss = nn.CrossEntropyLoss(ignore_index=self.special_tokens[self.pad_tok])
     self.g_lr0 = 1e-3
     self.reg_rate = 0
 
   def forward(self):
-    print("*" * 20 + "device: {}".format("gpu" if self.is_cuda else "cpu") + "*" * 20)
+    print("*" * 20 + "device: {}".format(self.device) + "*" * 20)
     self.total_batch = math.ceil(self.data_size / self.bsize)
     print("total batch: {}".format(self.total_batch))
     # self.load_generator("./pretrain/generator/model/model-2020-08-07_23-00-42/model-3-10")
@@ -63,19 +65,24 @@ class PreTrainer(Trainer):
         self.model_save(epoch, batch)
     print("\n")
 
-  def get_loss(self, labels, logits, parameters=None):
-    def _get_onehot(index, res=0):
-      ret = t.eye(self.vocab_size)[index]
-      ret += (1 - ret) * (res / (self.embed_dim - 1)) - ret * res
-      return ret.cuda() if self.is_cuda else ret
-
+  def get_loss(self, labels, logits, parameters=None, smooth=False):
     reg_term = 0
     if parameters is not None:
       for param in parameters:
         reg_term += t.norm(param)
 
-    return -t.mean(_get_onehot(labels[:, 1:], res=0.2) * t.log(logits + 1e-8)) + \
-           self.reg_rate * reg_term
+    if smooth:
+      def _get_onehot(index, res=0):
+        ret = t.eye(self.vocab_size, device=index.device)[index]
+        ret += (1 - ret) * (res / (self.embed_dim - 1)) - ret * res
+        return ret
+
+      labels = _get_onehot(labels[:, 1:], res=0.2)
+      loss = -t.mean(_get_onehot(labels[:, 1:], res=0.2) * t.log(logits + 1e-8))
+    else:
+      loss = self.cross_entropy_loss(logits.permute(0, 2, 1), labels[:, 1:])
+    loss = loss + self.reg_rate * reg_term
+    return loss
 
 
 if __name__ == "__main__":
