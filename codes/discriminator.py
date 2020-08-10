@@ -5,7 +5,7 @@ from torch import nn
 class Discriminator(nn.Module):
   def __init__(self, embedding, channels=[32, 16],
                half_wnd_sizes=[3, 4, 5], pool_ksize=[1, 2],
-               seq_len=32, dropout_prob=0.5, is_cuda=True):
+               seq_len=32, dropout_prob=0.5, device="cuda:0"):
     super(Discriminator, self).__init__()
     self.channels = channels
     self.wnd_sizes = list(map(lambda x: 2 * x + 1, half_wnd_sizes))
@@ -16,10 +16,9 @@ class Discriminator(nn.Module):
     self.dropout = nn.Dropout(dropout_prob)
     self.activate_function = t.relu
     self.pool = nn.MaxPool2d(pool_ksize)
-    self.is_cuda = is_cuda
+    self.device = device
 
-    if self.is_cuda:
-      self = self.cuda()
+    self = self.to(self.device)
 
   def forward(self, dialogs, neg_ans, ans=None):
     def _get_cross_enctropy_loss(labels, logits):
@@ -70,8 +69,8 @@ class Discriminator(nn.Module):
 
   def data_process(self, dialog, neg_ans, ans=None):
     def _get_onehot(index):
-      ret = t.eye(2)[index.long()]
-      return ret.cuda() if dialog.is_cuda else ret
+      ret = t.eye(2, device=dialog.device)[index.long()]
+      return ret
 
     if ans is None:
       labels = t.zeros(neg_ans.size(0))
@@ -91,9 +90,9 @@ class Discriminator(nn.Module):
     labels = t.cat([t.ones(data1.size(0)), t.zeros(data2.size(0))], 0)
 
     # shuffle so that 1s and 0s don't gather to appear
-    # shuffle_index = t.randperm(data.size(0))
-    # data = data[shuffle_index, :, :]
-    # labels = labels[shuffle_index]
+    shuffle_index = t.randperm(data.size(0))
+    data = data[shuffle_index, :, :]
+    labels = labels[shuffle_index]
     return data, _get_onehot(labels)
 
 

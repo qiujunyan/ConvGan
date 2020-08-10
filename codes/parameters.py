@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
-parser.add_argument("--batch_size", type=int, default=40)
+parser.add_argument("--batch_size", type=int, default=2)
 parser.add_argument("--epoch_num", type=int, default=1000)
 parser.add_argument("--embed_dim", type=int, default=64)
 parser.add_argument("--hidden_dim", type=int, default=64)
@@ -23,13 +23,12 @@ parser.add_argument("--train_dir2", type=str, default="./data/mutual/train/2",
 parser.add_argument("--test_dir", type=str, default="./data/mutual/test")
 parser.add_argument("--dev_dir", type=str, default="./data/mutual/dev")
 parser.add_argument("--model_dir", type=str, default="./model")
-parser.add_argument("--is_cuda", type=bool, default=True)
+parser.add_argument("--device", type=str, default="cuda:0")
 parser.add_argument("--k", type=int, default=5,
                     help="train discriminator after training generator k times")
 parser.add_argument("--n_times", type=int, default=10,
                     help="rollout algorithm parameter")
 parser.add_argument("--num_samples", type=int, default=5)
-parser.add_argument("--device", type=str, default="cuda:0")
 
 
 args = parser.parse_args()

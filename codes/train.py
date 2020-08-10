@@ -19,7 +19,7 @@ class Trainer(nn.Module):
   def __init__(self, args, mode="t"):
     super(Trainer, self).__init__()
     self.mode = mode
-    self.is_cuda = args.is_cuda
+    self.device = args.device
     self.data_loader = DataLoader(self.mode_check(mode, args), args.ans_max_len, args.dia_max_len)
     self.dialog_datas = np.array(self.data_loader.data_ids["dialogue"])
     self.ans_datas = np.array(self.data_loader.data_ids["true_ans"])
@@ -44,7 +44,7 @@ class Trainer(nn.Module):
     self.epoch_num = args.epoch_num
     self.g_lr0 = args.g_lr
     self.d_lr0 = args.d_lr
-    self.g_dropout = args.dropout
+    self.g_dropout = args.g_dropout
     self.channels = args.channels
     self.decay_rate = args.decay_rate
     self.n_times = args.n_times
@@ -57,10 +57,10 @@ class Trainer(nn.Module):
     self.embedding = nn.Embedding(self.vocab_size, self.embed_dim,
                                   padding_idx=self.special_tokens[self.pad_tok])
     self.generator = Generator(self.embedding, self.max_ans_len, self.g_dropout,
-                               self.special_tokens, is_cuda=self.is_cuda)
+                               self.special_tokens, device=self.device)
     self.discriminator = Discriminator(self.embedding,
                                        seq_len=self.max_ans_len + self.max_dialog_len,
-                                       is_cuda=self.is_cuda)
+                                       device=self.device)
     self.g_optim, self.d_optim = self.init_optim()
 
   def mode_check(self, mode, args):
@@ -86,7 +86,7 @@ class Trainer(nn.Module):
       self.train_one_epoch(epoch)
 
   def print_train_info(self):
-    print("*" * 20 + "device: {}".format("gpu" if self.is_cuda else "cpu") + "*" * 20)
+    print("*" * 20 + "device: {}".format(self.device) + "*" * 20)
     self.record_params()
 
   def train_one_epoch(self, epoch):
@@ -182,21 +182,9 @@ class Trainer(nn.Module):
 
   def data_converter(self, data):
     ''' from lists with random length to LongTensor'''
-    return t.LongTensor(data).cuda() if self.is_cuda else t.LongTensor(data)
+    return t.LongTensor(data).to(self.device)
 
   def record_params(self):
-    # record_info = {"batch_num": self.total_batch,
-    #                "vocab size": self.vocab_size,
-    #                "embedding dim": self.embed_dim,
-    #                "batch size": self.bsize,
-    #                "total epoch number": self.epoch_num,
-    #                "generator learning rate": self.g_lr0,
-    #                "discriminator learning rate": self.d_lr0,
-    #                "answer_max_len": self.max_ans_len,
-    #                "dialog_max_len": self.max_dialog_len,
-    #                "next_token_samples": self.num_samples,
-    #                "n_times": self.n_times,
-    #                "use_cuda": True if self.is_cuda else False}
     record_info = {}
     base_type = (str, int, float, bool)
     for attr_name in dir(self):

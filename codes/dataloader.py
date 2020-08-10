@@ -12,17 +12,17 @@ from codes.parameters import args
 
 
 class DataLoader(object):
-  def __init__(self, data_dir, ans_max_len, dialog_max_len=None):
+  def __init__(self, data_dir, ans_max_len, dialog_max_len=None, is_load_dict=True):
     self.unkown_tok, self.pad_tok, self.sep_tok, self.bos_tok, self.eos_tok, self.time_tok, self.digit_tok = \
       ["<UNKNOWN>", "<PAD>", "<SEP>", "<BOS>", "<EOS>", "<T>", "<D>"]
-    self.special_tokens = {self.unkown_tok: 1,
-                           self.pad_tok: 0, self.sep_tok: 2, self.bos_tok: 3,
+    self.special_tokens = {self.pad_tok: 0, self.unkown_tok: 1,
+                           self.sep_tok: 2, self.bos_tok: 3,
                            self.eos_tok: 4, self.time_tok: 5, self.digit_tok: 6}
     self.dir = data_dir
     self.ans_max_len = ans_max_len
     self.dialog_max_len = dialog_max_len
 
-    self.is_load_dict = False
+    self.is_load_dict = is_load_dict
     self.data_tokens = self.preprocess(self.dir)
     self.token_id, self.id_token = self.dict_gen()
     self.data_ids, self.seq_lens = self.tokens2id()

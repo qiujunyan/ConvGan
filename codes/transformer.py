@@ -95,7 +95,7 @@ class MultiHeadAttention(nn.Module):
     # return self.linear_out(attention)
 
   def scaled_dot_production(self, Q, K, V, ori_key, sequence_padding):
-    embed_dim = t.Tensor([self.embed_dim]).cuda() if Q.is_cuda else t.Tensor([self.embed_dim])
+    embed_dim = t.Tensor([self.embed_dim]).to(Q.device)
     attn_weight = t.matmul(Q, K.permute(0, 2, 1)) / t.sqrt(embed_dim)
     # if scale attention weight, it could be easier to train model,
     # but also be inditinguishable after going through softmax function
@@ -118,10 +118,9 @@ class MultiHeadAttention(nn.Module):
     l_q = query.size(1)
     masks = t.sign(t.sum(t.abs(key), -1)).unsqueeze(1)  # B * 1 * L_k
     masks = masks.repeat(1, l_q, 1)  # B*n * L_q * L_k
-    try:
-      return t.where(masks == 0, t.Tensor([neg_large_num]), t.Tensor([0]))
-    except RuntimeError:
-      return t.where(masks == 0, t.Tensor([neg_large_num]).cuda(), t.Tensor([0]).cuda())
+    return t.where(masks == 0,
+                   t.Tensor([neg_large_num]).to(masks.device),
+                   t.Tensor([0]).to(masks.device))
 
   def get_sequence_masks(self, attn_weight):
     '''
@@ -161,15 +160,13 @@ class PositionalEncoding(nn.Module):
 
   def forward(self, inputs):
     batch_size, max_len, _ = inputs.size()
-    pe = t.zeros(max_len, self.model_dim)
+    pe = t.zeros(max_len, self.model_dim).to(inputs.device)
     position = t.arange(1, max_len + 1, dtype=t.float32).unsqueeze(-1).repeat(1, self.model_dim // 2)
     div_term = t.pow(1e5, -t.arange(0, self.model_dim, 2,
                                     dtype=t.float32) / self.model_dim).unsqueeze(0).repeat(max_len, 1)
     pe[:, 0::2] = t.sin(position * div_term)
     pe[:, 1::2] = t.cos(position * div_term)
     pe = pe.unsqueeze(0).repeat(batch_size, 1, 1)
-    if inputs.is_cuda:
-      pe = pe.cuda()
     masks = t.sign(t.sum(t.abs(inputs), -1)).unsqueeze(-1).repeat(1, 1, self.model_dim)
     return inputs + self.rate * pe * masks
 

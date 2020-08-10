@@ -6,8 +6,8 @@ from codes.transformer import Transformer
 
 class Generator(nn.Module):
   def __init__(self, embedding, ans_max_len, dropout, special_tokens,
-               hidden_dim=64, num_layers=1, num_heads=8,
-               n_times=20, is_cuda=True, mode="train"):
+               hidden_dim=64, num_layers=6, num_heads=8,
+               n_times=20, device="cuda:0", mode="train"):
     super(Generator, self).__init__()
     self.embedding = embedding
     self.ans_max_len = ans_max_len
@@ -18,7 +18,7 @@ class Generator(nn.Module):
     self.mode = mode
     self.pad_id = special_tokens["<PAD>"]
     self.bos_id = special_tokens["<BOS>"]
-    self.is_cuda = is_cuda
+    self.device = device
     self.dropout = dropout
     self.curriculum_rate = 0  # used to control the probability of replacing the true tokens with generated ones.
     self.n_times = n_times
@@ -27,8 +27,7 @@ class Generator(nn.Module):
                                self.num_heads, self.num_layers, self.dropout)
     self.decoder = Transformer(self.embed_dim, self.vocab_size, self.hidden_dim,
                                self.num_heads, self.num_layers, self.dropout)
-    if self.is_cuda:
-      self = self.cuda()
+    self = self.to(device)
 
   def forward(self, dialogs, mode=None, init_dec_input_index=None,
               num_samples=10, is_pretraining=False):
@@ -58,15 +57,13 @@ class Generator(nn.Module):
   def get_init_dec_input_index(self, init_dec_input_index, batch_size):
     if init_dec_input_index is None:
       init_dec_input_index = t.ones(batch_size, 1, dtype=t.int64) * self.bos_id
-    if self.is_cuda:
-      init_dec_input_index = init_dec_input_index.cuda()
+    init_dec_input_index = init_dec_input_index.to(self.device)
     return init_dec_input_index
 
   def gen_whole_sequence(self, enc_output, init_dec_input_index, curriculum_rate=0):
     batch_size, dec_seq_len = init_dec_input_index.size()
-    outputs = t.zeros(batch_size, self.ans_max_len - 1, self.vocab_size)
-    if self.is_cuda:
-      outputs = outputs.cuda()
+    outputs = t.zeros(batch_size, self.ans_max_len - 1,
+                      self.vocab_size, device=enc_output.device)
 
     for i in range(self.ans_max_len - 1):
       outputs[:, i, :] = self.decoder(self.embedding(init_dec_input_index[:, :i + 1]),
@@ -86,7 +83,7 @@ class Generator(nn.Module):
         probs[i, :] = dec_output[i, index[i]]
       return probs
 
-    small_number = t.Tensor([1e-8]).cuda() if self.is_cuda else t.Tensor([1e-8])
+    small_number = t.Tensor([1e-8], device=enc_output.device)
     dec_input = self.embedding(init_dec_input_index)
     dec_output = self.decoder(dec_input, enc_output, enc_output,
                               ori_k=self.dialogs, mode="decode").squeeze(1)
@@ -104,8 +101,8 @@ class Generator(nn.Module):
 
   def sample_whole_sequence(self, init_dec_input_index, enc_output):
     batch_size, dec_seq_len = init_dec_input_index.size()
-    pad_index = t.ones(batch_size, self.ans_max_len - dec_seq_len, dtype=t.int64) * self.pad_id
-    if self.is_cuda: pad_index = pad_index.cuda()
+    pad_index = t.ones(batch_size, self.ans_max_len - dec_seq_len,
+                       dtype=t.int64, device=enc_output.device) * self.pad_id
     dec_input_index = t.cat([init_dec_input_index, pad_index], 1)
 
     for i in range(dec_seq_len, self.ans_max_len):
