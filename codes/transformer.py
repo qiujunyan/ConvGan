@@ -1,7 +1,13 @@
+import copy
 import math
 
 import torch as t
 from torch import nn
+
+
+def clones(module, N):
+  "产生N个相同的层"
+  return nn.ModuleList([copy.deepcopy(module) for _ in range(N)])
 
 
 class Transformer(nn.Module):
@@ -23,15 +29,15 @@ class Encoder(nn.Module):
     super(Encoder, self).__init__()
     self.num_layers = num_layers
     self.pe = PositionalEncoding(hidden_dim)
-    self.sublayer = nn.ModuleList([SubLayerConnection(hidden_dim, dropout)] * 2)
-    self.self_attn = nn.ModuleList([MultiHeadAttention(hidden_dim, num_heads)] * num_layers)
-    self.feed_forward = nn.ModuleList([FeedForward(hidden_dim, d_ff)] * num_layers)
+    self.sublayers = clones(SubLayerConnection(hidden_dim, dropout), 2)
+    self.self_attn = clones(MultiHeadAttention(hidden_dim, num_heads), num_layers)
+    self.feed_forward = clones(FeedForward(hidden_dim, d_ff), num_layers)
 
   def forward(self, query, mask=None):
     x = self.pe(query)
     for i in range(self.num_layers):
-      x = self.sublayer[0](x, lambda x: self.self_attn[i](x, x, x, mask))
-      x = self.sublayer[1](x, self.feed_forward[i])
+      x = self.sublayers[0](x, lambda x: self.self_attn[i](x, x, x, mask))
+      x = self.sublayers[1](x, self.feed_forward[i])
     return x
 
 
@@ -40,18 +46,18 @@ class Decoder(nn.Module):
     super(Decoder, self).__init__()
     self.num_layers = num_layers
     self.pe = PositionalEncoding(hidden_dim)
-    self.sublayer = nn.ModuleList([SubLayerConnection(hidden_dim, dropout)] * 3)
-    self.self_attn = nn.ModuleList([MultiHeadAttention(hidden_dim, num_heads)] * num_layers)
-    self.src_attn = nn.ModuleList([MultiHeadAttention(hidden_dim, num_heads)] * num_layers)
-    self.feed_forward = nn.ModuleList([FeedForward(hidden_dim, d_ff)] * num_layers)
+    self.sublayers = clones(SubLayerConnection(hidden_dim, dropout), 3)
+    self.self_attn = clones(MultiHeadAttention(hidden_dim, num_heads), num_layers)
+    self.src_attn = clones(MultiHeadAttention(hidden_dim, num_heads), num_layers)
+    self.feed_forward = clones(FeedForward(hidden_dim, d_ff), num_layers)
     self.output_linear = nn.Linear(hidden_dim, vocab_size)
 
   def forward(self, query, key, value, q_mask=None, k_mask=None):
     x = self.pe(query)
     for i in range(self.num_layers):
-      x = self.sublayer[0](x, lambda x: self.self_attn[i](x, x, x, q_mask, seq_mask=True))
-      x = self.sublayer[1](x, lambda x: self.src_attn[i](x, key, value, k_mask))
-      x = self.sublayer[2](x, self.feed_forward[i])
+      x = self.sublayers[0](x, lambda x: self.self_attn[i](x, x, x, q_mask, seq_mask=True))
+      x = self.sublayers[1](x, lambda x: self.src_attn[i](x, key, value, k_mask))
+      x = self.sublayers[2](x, self.feed_forward[i])
     output = self.output_linear(x)
     return t.softmax(output, -1)
 
@@ -72,32 +78,34 @@ class MultiHeadAttention(nn.Module):
     assert hidden_dim % num_heads == 0
     self.hidden_dim = hidden_dim
     self.num_heads = num_heads
+    self.active_function = t.tanh
     self.layer_norm = LayerNormalization(hidden_dim, False)
-    self.linear_qs = nn.ModuleList([nn.Linear(hidden_dim, hidden_dim // num_heads)] * num_heads)
-    self.linear_ks = nn.ModuleList([nn.Linear(hidden_dim, hidden_dim // num_heads)] * num_heads)
-    self.linear_vs = nn.ModuleList([nn.Linear(hidden_dim, hidden_dim // num_heads)] * num_heads)
+    self.linears = clones(nn.Linear(hidden_dim, hidden_dim), 4)
     self.linear_out = nn.Linear(hidden_dim, hidden_dim)
 
   def forward(self, query, key, value, mask, seq_mask=False):
-    heads = [None] * self.num_heads
-    for i in range(self.num_heads):
-      q_i = self.linear_qs[i](query)  # B * l_q * d_m / num_heads
-      k_i = self.linear_ks[i](key)  # B * l_k * d_m / num_heads
-      v_i = self.linear_vs[i](value)
-      heads[i] = self.scaled_dot_production(q_i, k_i, v_i, seq_mask, mask)
-    attention = t.cat(heads, -1)
+    batch_size = query.size(0)
+    #  B * L * d -> B * n * L * d/n
+    query, key, value = \
+      [linear(x).view(batch_size, -1, self.num_heads,
+                      self.hidden_dim // self.num_heads).transpose(1, 2)
+       for linear, x in zip(self.linears, (query, key, value))]
+    attention = self.scaled_dot_production(query, key, value, seq_mask, mask)  # B * n * l_q * d /n
+    attention = attention.transpose(1, 2).contiguous(). \
+      view(batch_size, -1, self.hidden_dim)
     return self.linear_out(attention)
 
   def scaled_dot_production(self, Q, K, V, seq_mask, masks=None):
-    attn_weight = t.matmul(Q, K.permute(0, 2, 1)) / math.sqrt(self.hidden_dim)  # B * l_q * l_k
-    attn_weight = self.layer_norm(attn_weight)
+    attn_weight = t.matmul(Q, K.permute(0, 1, 3, 2)) / math.sqrt(self.hidden_dim)  # B * n * l_q * l_k
+    # attn_weight = self.layer_norm(attn_weight)
 
-    l_q = Q.size(1)
-    masks = masks.unsqueeze(1).repeat(1, l_q, 1)
+    l_q = Q.size(-2)
+    # B * l_k -> B * n * l_q * l_k
+    masks = masks.unsqueeze(1).unsqueeze(2).repeat(1, self.num_heads, l_q, 1)
     if seq_mask:
       masks |= t.triu(t.ones_like(masks, dtype=t.uint8), diagonal=1)
     if masks is not None:
-      masks = t.zeros_like(masks, dtype=t.float32).masked_fill_(masks, -1e-32)
+      masks = t.zeros_like(masks, dtype=t.float32).masked_fill_(masks, -1e32)
       attn_weight = t.softmax(attn_weight + masks, -1)
     return t.matmul(attn_weight, V)
 
@@ -152,11 +160,6 @@ class PositionalEncoding(nn.Module):
   def forward(self, x):
     x = x + self.pe[:, :x.size(1)] * self.rate
     return self.dropout(x)
-
-
-class PaddingMask(nn.Module):
-  def __init__(self):
-    super(PaddingMask, self).__init__()
 
 
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 class Args(object):
   def __init__(self):
-    self.batch_size = 1
+    self.batch_size = 60
     self.epoch_num = 1000
     self.embed_dim = 64
     self.d_ff = 128
-    self.ans_max_len = 10
+    self.ans_max_len = 20
     self.dia_max_len = 400
 
     self.pad_tok = "<PAD>"
