@@ -1,10 +1,8 @@
 import json
-import math
 import os
 import pprint
 import time
 
-import numpy as np
 import torch as t
 from torch import nn
 from torch import optim
@@ -12,66 +10,27 @@ from torch import optim
 from codes.dataloader import DataLoader
 from codes.discriminator import Discriminator
 from codes.generator import Generator
-from codes.parameters import args
+from codes.parameters import Args
 
 
-class Trainer(nn.Module):
-  def __init__(self, args, mode="t"):
-    super(Trainer, self).__init__()
-    self.mode = mode
-    self.device = args.device
-    self.data_loader = DataLoader(self.mode_check(mode, args), args.ans_max_len, args.dia_max_len)
-    self.dialog_datas = np.array(self.data_loader.data_ids["dialogue"])
-    self.ans_datas = np.array(self.data_loader.data_ids["true_ans"])
-    self.max_dialog_len = self.dialog_datas.shape[1]
-    self.max_ans_len = self.ans_datas.shape[1]
-    self.dialog_lens, self.ans_lens, _ = self.data_loader.seq_lens.values()
-    self.data_tokens = self.data_loader.data_tokens
-    self.data_size, _ = self.ans_datas.shape
-    self.pad_tok = self.data_loader.pad_tok
-
-    # dataloader parameters
-    self.vocab_size = self.data_loader.vocab_size
-    self.token_id = self.data_loader.token_id
-    self.id_token = self.data_loader.id_token
-    self.special_tokens = self.data_loader.special_tokens
-
-    # parameters related to training
-    self.args = args
-    self.embed_dim = args.embed_dim
-    self.hidden_dim = args.hidden_dim
-    self.bsize = args.batch_size
-    self.epoch_num = args.epoch_num
-    self.g_lr0 = args.g_lr
-    self.d_lr0 = args.d_lr
-    self.g_dropout = args.g_dropout
-    self.channels = args.channels
-    self.decay_rate = args.decay_rate
-    self.n_times = args.n_times
-    self.device = args.device
-    self.clip = args.clip
-    self.num_samples = args.num_samples
-    self.curriculum_rate = args.curriculum_rate
-    self.total_batch = math.ceil(self.data_size / self.bsize)
+class Trainer(nn.Module, DataLoader, Args):
+  def __init__(self, data_dir="data/mutual/train"):
+    nn.Module.__init__(self)
+    Args.__init__(self)
+    DataLoader.__init__(self, data_dir, is_load_dict=True)
+    self.dialog = t.LongTensor(self.data_ids["dialogue"]).to(self.device)
+    self.answer = t.LongTensor(self.data_ids["true_ans"]).to(self.device)
+    self.dialog_lens, self.ans_lens, _ = self.seq_lens.values()
 
     self.embedding = nn.Embedding(self.vocab_size, self.embed_dim,
                                   padding_idx=self.special_tokens[self.pad_tok])
-    self.generator = Generator(self.embedding, self.max_ans_len, self.g_dropout,
+    self.generator = Generator(self.embedding, self.ans_max_len, self.g_dropout,
                                self.special_tokens, device=self.device)
-    self.discriminator = Discriminator(self.embedding,
-                                       seq_len=self.max_ans_len + self.max_dialog_len,
-                                       device=self.device)
-    self.g_optim, self.d_optim = self.init_optim()
-
-  def mode_check(self, mode, args):
-    if mode.lower() in ["train", "t"]:
-      return args.train_dir1
-    if mode.lower() in ["pretrain", "p"]:
-      return args.train_dir2
-    elif mode.lower() in ["eval", "e"]:
-      return args.dev_dir
-    else:
-      raise ValueError
+    self.discriminator = Discriminator(self.embedding, device=self.device,
+                                       seq_len=self.ans_max_len + self.dia_max_len)
+    self.g_optim = optim.Adam(self.generator.parameters(), lr=self.g_lr0)
+    self.d_optim = optim.SGD(self.discriminator.parameters(), lr=self.d_lr0)
+    self = self.to(self.device)
 
   def forward(self):
     # self.load_generator("./pretrain/generator/model/model-2020-08-02_19-14-25/model-618-40")
@@ -99,30 +58,29 @@ class Trainer(nn.Module):
                                epoch * self.total_batch + batch,
                                self.epoch_num * self.total_batch,
                                min_lr=1e-4, warmup=10, warmup_lr=1e-3)
-      ans_datas, dialog_datas, ans_lens = self.batch_data_prep(batch)
+      answer, dialog, src_mask, tgt_mask, ans_lens = self.get_batch(batch)
 
       # caculate the state value by sampling the next action(token[t])
       # based on the current state(token[1:t-1])
       for i in range(self.max_ans_len - 1):
-        states, probs = self.generator(dialogs=dialog_datas,
-                                       mode=0,
-                                       init_dec_input_index=ans_datas[:, :i + 1],
-                                       num_samples=self.num_samples)
-        probs.retain_grad()
+        states, probs = self.generator(src=dialog, tgt=answer[:, :i + 1],
+                                       src_mask=src_mask, tgt_mask=tgt_mask,
+                                       num_samples=self.n_samples,
+                                       mode=0)
         action_values = t.zeros_like(probs)
         self.g_optim.zero_grad()
 
-        for j in range(self.num_samples):
+        for j in range(self.n_samples):
           state = states[j]
           scores = []
 
           # caculate the action value by sampling the whole sequence(token[t+1:T])
           # n times based on the state-action pair(token[1:t-1], token[t])
           for _ in range(self.n_times):
-            episode = self.generator(dialogs=dialog_datas,
-                                     mode=1,
-                                     init_dec_input_index=state)
-            score = self.discriminator(dialog_datas, episode).detach()
+            episode = self.generator(src=dialog, tgt=state,
+                                     src_mask=src_mask, tgt_mask=tgt_mask,
+                                     mode=1)
+            score = self.discriminator(dialog, episode).detach()
             scores.append(score)
           action_value = sum(scores) / len(scores)
           action_values[j, :] = action_value
@@ -134,34 +92,25 @@ class Trainer(nn.Module):
         self.g_optim.step()
         # generated token as the next token, this may cause accumulative error
         # as the training process goes.
-        generator_input = self.generator(dialogs=dialog_datas,
-                                         mode=2,
-                                         init_dec_input_index=generator_input)
+        generator_input = self.generator(src=dialog, tgt=generator_input,
+                                         src_mask=src_mask, tgt_mask=tgt_mask,
+                                         mode=2)
         print("({}: {:.3})".format(i, neg_state_value.item()), end=" ")
 
     #  discriminator training round
     print("\n")
     gen_sents = generator_input
     self.d_optim.zero_grad()
-    loss, d_acc = self.discriminator(dialog_datas, gen_sents.detach(), ans_datas)
+    loss, d_acc = self.discriminator(dialog, gen_sents.detach(), answer)
     loss.backward()
     self.d_optim.step()
     _ = self.adjust_lr(self.d_lr0, self.g_optim, self.total_batch * epoch + batch,
                        self.total_batch * self.epoch_num)
 
-    g_acc = self.get_accuracy(gen_sents, ans_datas)
-    self.log_record(epoch, batch, loss, gen_sents, ans_datas, g_acc, d_acc, ans_lens)
+    g_acc = self.get_accuracy(gen_sents, answer)
+    self.log_record(epoch, batch, loss, gen_sents, answer, g_acc, d_acc, ans_lens)
     self.model_save(epoch, batch)
     print("\n")
-
-  def init_optim(self):
-    g_optim = optim.Adam(self.generator.parameters(), lr=self.g_lr0)
-    d_optim = optim.SGD(self.discriminator.parameters(), lr=self.d_lr0)
-    return g_optim, d_optim
-
-  def adjust_curriculum_rate(self, iter, max_iter):
-    iter = min(max_iter, iter)
-    return iter / max_iter
 
   def adjust_lr(self, lr0, optim, iter, max_iter,
                 min_lr=None, warmup=None,
@@ -180,10 +129,6 @@ class Trainer(nn.Module):
   def clip_grad_value(self, parameters, clip_value):
     t.nn.utils.clip_grad_value_(parameters, clip_value)
 
-  def data_converter(self, data):
-    ''' from lists with random length to LongTensor'''
-    return t.LongTensor(data).to(self.device)
-
   def record_params(self):
     record_info = {}
     base_type = (str, int, float, bool)
@@ -198,13 +143,17 @@ class Trainer(nn.Module):
     with open(self.record_file, "w") as f:
       json.dump(record_info, f, separators=("\n", " : "))
 
-  def batch_data_prep(self, index):
-    start = index * self.bsize
-    end = min((index + 1) * self.bsize, self.data_size)
-    ans_datas = self.data_converter(self.ans_datas[start:end, :])
-    dialog_datas = self.data_converter(self.dialog_datas[start:end, :])
+  def get_batch(self, index):
+    start = index * self.batch_size
+    end = min((index + 1) * self.batch_size, self.data_size)
+    answer = self.answer[start:end, :]
+    dialog = self.dialog[start:end, :]
     ans_lens = self.ans_lens[start:end]
-    return ans_datas, dialog_datas, ans_lens
+
+    # get mask
+    src_mask = (dialog == self.special_tokens[self.pad_tok]).to(dialog.device)
+    tgt_mask = (answer == self.special_tokens[self.pad_tok]).to(dialog.device)
+    return answer, dialog, src_mask, tgt_mask, ans_lens
 
   def log_record(self, epoch, batch, loss,
                  gen_datas, true_datas,
@@ -266,6 +215,6 @@ class Trainer(nn.Module):
 if __name__ == "__main__":
   print("data loaded...")
 
-  trainer = Trainer(args, mode="train")
+  trainer = Trainer(mode="train")
   trainer()
   # trainer.inference("./model/model-2020-07-02_10-34-32/model-199")

@@ -1,34 +1,33 @@
-from argparse import ArgumentParser
+class Args(object):
+  def __init__(self):
+    self.batch_size = 1
+    self.epoch_num = 1000
+    self.embed_dim = 64
+    self.d_ff = 128
+    self.ans_max_len = 10
+    self.dia_max_len = 400
 
-parser = ArgumentParser()
-parser.add_argument("--batch_size", type=int, default=2)
-parser.add_argument("--epoch_num", type=int, default=1000)
-parser.add_argument("--embed_dim", type=int, default=64)
-parser.add_argument("--hidden_dim", type=int, default=64)
-parser.add_argument("--ans_max_len", type=int, default=40)
-parser.add_argument("--dia_max_len", type=int, default=400)
-parser.add_argument("--channels", type=list, default=[16, 32])
-parser.add_argument("--g_lr", type=float, default=1e-2)
-parser.add_argument("--d_lr", type=float, default=1e-2)
-parser.add_argument("--g_dropout", type=float, default=0.3)
-parser.add_argument("--clip", type=float, default=1)
-parser.add_argument("--decay_rate", type=float, default=0.2)
-parser.add_argument("--curriculum_rate", type=float, default=0)
-parser.add_argument("--reg_rate", type=float, default=1e-3,
-                    help="regularization rate")
-parser.add_argument("--train_dir1", type=str, default="./data/mutual/train/1",
-                    help="GAN model training data")
-parser.add_argument("--train_dir2", type=str, default="./data/mutual/train/2",
-                    help="Generator pre-training")
-parser.add_argument("--test_dir", type=str, default="./data/mutual/test")
-parser.add_argument("--dev_dir", type=str, default="./data/mutual/dev")
-parser.add_argument("--model_dir", type=str, default="./model")
-parser.add_argument("--device", type=str, default="cuda:0")
-parser.add_argument("--k", type=int, default=5,
-                    help="train discriminator after training generator k times")
-parser.add_argument("--n_times", type=int, default=10,
-                    help="rollout algorithm parameter")
-parser.add_argument("--num_samples", type=int, default=5)
-
-
-args = parser.parse_args()
+    self.pad_tok = "<PAD>"
+    self.unkown_tok = "<UNKNOWN>"
+    self.sep_tok = "<SEP>"
+    self.bos_tok = "<BOS>"
+    self.eos_tok = "<EOS>"
+    self.time_tok = "<T>"
+    self.digit_tok = "<D>"
+    self.special_tokens = {self.pad_tok: 0, self.unkown_tok: 1,
+                           self.sep_tok: 2, self.bos_tok: 3,
+                           self.eos_tok: 4, self.time_tok: 5, self.digit_tok: 6}
+    self.clean_data = False
+    self.channels = [16, 32]
+    self.g_lr0 = 1e-3
+    self.d_lr0 = 1e-3
+    self.g_dropout = 0.0
+    self.d_dropout = 0.0
+    self.device = "cuda:0"
+    self.n_samples = 5
+    self.n_times = 10
+    self.reg_rate = 1e-3
+    self.train_dir = "data/mutual/train/"
+    self.dev_dir = "data/mutual/dev/"
+    self.test_dir = "data/mutual/test/"
+    self.model_dir = "model"

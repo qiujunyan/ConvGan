@@ -8,22 +8,15 @@ from collections import defaultdict, Counter
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from codes.parameters import args
+from codes.parameters import Args
 
 
-class DataLoader(object):
-  def __init__(self, data_dir, ans_max_len, dialog_max_len=None, is_load_dict=True):
-    self.unkown_tok, self.pad_tok, self.sep_tok, self.bos_tok, self.eos_tok, self.time_tok, self.digit_tok = \
-      ["<UNKNOWN>", "<PAD>", "<SEP>", "<BOS>", "<EOS>", "<T>", "<D>"]
-    self.special_tokens = {self.pad_tok: 0, self.unkown_tok: 1,
-                           self.sep_tok: 2, self.bos_tok: 3,
-                           self.eos_tok: 4, self.time_tok: 5, self.digit_tok: 6}
+class DataLoader(Args):
+  def __init__(self, data_dir, is_load_dict=True):
+    super(DataLoader, self).__init__()
     self.dir = data_dir
-    self.ans_max_len = ans_max_len
-    self.dialog_max_len = dialog_max_len
-
     self.is_load_dict = is_load_dict
-    self.data_tokens = self.preprocess(self.dir)
+    self.data_tokens, self.data_size = self.preprocess(self.dir)
     self.token_id, self.id_token = self.dict_gen()
     self.data_ids, self.seq_lens = self.tokens2id()
     self.vocab_size = len(self.token_id)
@@ -41,10 +34,11 @@ class DataLoader(object):
           self.answers_process(list(map(lambda x: x[4:], contents["options"])), contents["answers"])
         seq_tokens.append(episod)
 
-    for i, seq in tqdm(enumerate(seq_tokens)):
-      for key in seq.keys():
-        self.data_clean(seq_tokens[i][key])
-    return seq_tokens
+    if self.clean_data:
+      for i, seq in tqdm(enumerate(seq_tokens)):
+        for key in seq.keys():
+          self.data_clean(seq_tokens[i][key])
+    return seq_tokens, len(seq_tokens)
 
   def seq_pad(self, seq_list):
     # pad eos token in front of each sentence and bos token at the end of each sentence
@@ -69,7 +63,7 @@ class DataLoader(object):
     dialogs = re.split(r"(?:f : |m : )", article.strip())
     dialogs = list(filter(None, dialogs))
     dialogs = (" " + self.sep_tok + " ").join(dialogs)
-    return self.seq_pad(self.seq_clip(dialogs, self.dialog_max_len))
+    return self.seq_pad(self.seq_clip(dialogs, self.dia_max_len))
 
   def data_clean(self, tok_list):
     def is_digit(token):
@@ -108,10 +102,8 @@ class DataLoader(object):
       except FileNotFoundError:
         print("Dictionary file not found! Starting to regenerate.")
 
-    tokens = self.preprocess("./data/mutual/train/1")
-    tokens.extend(self.preprocess("./data/mutual/train/2"))
     diction = Counter()
-    for data in tqdm(tokens):
+    for data in tqdm(self.data_tokens):
       diction += Counter(data["dialogue"])
       diction += Counter(data["true_ans"])
       for item in data["wrong_ans"]:
@@ -153,7 +145,7 @@ class DataLoader(object):
 
     data_ids = {"dialogue": [], "true_ans": [], "wrong_ans": []}
     seq_lens = {"dialogue": [], "true_ans": [], "wrong_ans": []}
-    max_len = {"dialogue": self.dialog_max_len, "true_ans": self.ans_max_len, "wrong_ans": self.ans_max_len}
+    max_len = {"dialogue": self.dia_max_len, "true_ans": self.ans_max_len, "wrong_ans": self.ans_max_len}
     for seq in tqdm(self.data_tokens):
       for key in data_ids.keys():
         tmp, seq_len = _tokens2id(seq[key])
@@ -198,4 +190,4 @@ class DataLoader(object):
 
 
 if __name__ == "__main__":
-  dl = DataLoader(args.dev_dir, args.ans_max_len, args.dia_max_len)
+  dl = DataLoader("data/mutual/train/")

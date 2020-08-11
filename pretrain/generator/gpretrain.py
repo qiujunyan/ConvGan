@@ -5,21 +5,21 @@ import time
 import torch as t
 from torch import nn
 
-from codes.parameters import args
 from codes.train import Trainer
 
 
 class PreTrainer(Trainer):
-  def __init__(self, args, mode="p"):
-    super(PreTrainer, self).__init__(args, mode)
+  def __init__(self, data_dir="./data/mutual/dev"):
+    Trainer.__init__(self, data_dir)
     self.epoch_num = 100
     self.cross_entropy_loss = nn.CrossEntropyLoss(ignore_index=self.special_tokens[self.pad_tok])
-    self.g_lr0 = 1e-3
+    self.g_lr0 = 1e-1
     self.reg_rate = 0
 
   def forward(self):
     print("*" * 20 + "device: {}".format(self.device) + "*" * 20)
-    self.total_batch = math.ceil(self.data_size / self.bsize)
+    self.total_batch = math.ceil(self.data_size / self.batch_size)
+    self.total_batch = 1
     print("total batch: {}".format(self.total_batch))
     # self.load_generator("./pretrain/generator/model/model-2020-08-07_23-00-42/model-3-10")
 
@@ -37,18 +37,16 @@ class PreTrainer(Trainer):
       f.write("\n")
     for batch in range(self.total_batch):
       self.g_optim.zero_grad()
-      ans_datas, dialog_datas, ans_lens = self.batch_data_prep(batch)
-      curriculum_rate = self.adjust_curriculum_rate(epoch * self.bsize + batch,
-                                                    self.epoch_num * self.bsize)
+      answer, dialog, src_mask, tgt_mask, ans_lens = self.get_batch(batch)
       self.lr = self.adjust_lr(self.g_lr0, self.g_optim,
                                epoch * self.total_batch + batch,
                                self.epoch_num * self.total_batch,
                                min_lr=1e-4, warmup=0, warmup_lr=1e-4)
-      logits = self.generator(dialog_datas,
-                              init_dec_input_index=ans_datas,
+      logits = self.generator(src=dialog, tgt=answer,
+                              src_mask=src_mask, tgt_mask=tgt_mask,
                               is_pretraining=True)
       gen_sents = t.argmax(logits, -1)
-      loss = self.get_loss(ans_datas, logits, self.generator.parameters())
+      loss = self.get_celoss(answer, logits, self.generator.parameters())
 
       # optimization
       self.g_optim.zero_grad()
@@ -58,14 +56,14 @@ class PreTrainer(Trainer):
       self.embedding.weight.grad[self.special_tokens[self.pad_tok]] = 0
       self.g_optim.step()
 
-      if batch % 10 == 0:
-        acc = self.get_accuracy(gen_sents, ans_datas[:, 1:])
-        self.log_record(epoch, batch, loss, gen_sents, ans_datas,
+      if epoch % 5 == 0:
+        acc = self.get_accuracy(gen_sents, answer[:, 1:])
+        self.log_record(epoch, batch, loss, gen_sents, answer,
                         g_acc=acc, ans_lens=ans_lens)
         self.model_save(epoch, batch)
-    print("\n")
+        print("\n")
 
-  def get_loss(self, labels, logits, parameters=None, smooth=False):
+  def get_celoss(self, labels, logits, parameters=None, smooth=False):
     reg_term = 0
     if parameters is not None:
       for param in parameters:
@@ -78,7 +76,7 @@ class PreTrainer(Trainer):
         return ret
 
       labels = _get_onehot(labels[:, 1:], res=0.2)
-      loss = -t.mean(_get_onehot(labels[:, 1:], res=0.2) * t.log(logits + 1e-8))
+      loss = -t.mean(labels * t.log(logits + 1e-8))
     else:
       loss = self.cross_entropy_loss(logits.permute(0, 2, 1), labels[:, 1:])
     loss = loss + self.reg_rate * reg_term
@@ -86,6 +84,6 @@ class PreTrainer(Trainer):
 
 
 if __name__ == "__main__":
-  trainer = PreTrainer(args)
+  trainer = PreTrainer()
   trainer()
 gen_sents
