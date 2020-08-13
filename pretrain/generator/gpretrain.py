@@ -23,7 +23,7 @@ class PreTrainer(Trainer):
   def forward(self):
     print("*" * 20 + "device: {}".format(self.device) + "*" * 20)
     self.total_batch = math.ceil(self.data_size / self.batch_size)
-    self.total_batch = 1
+    # self.total_batch = 1
     print("total batch: {}".format(self.total_batch))
     # self.load_generator("./pretrain/generator/model/model-20-0")
 
