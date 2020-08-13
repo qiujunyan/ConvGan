@@ -30,7 +30,7 @@ class Transformer(nn.Module):
     embedding = self.embedding(index)
     embed_dim = self.embedding.weight.size(1)
     if scale:
-      embedding = embedding * t.sqrt(embed_dim)
+      embedding = embedding * math.sqrt(embed_dim)
     return embedding
 
 class Encoder(nn.Module):

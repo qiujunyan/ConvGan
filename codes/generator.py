@@ -9,9 +9,9 @@ class Generator(nn.Module):
                d_ff=512, num_layers=6, num_heads=8,
                n_times=10, device="cuda:0", mode="train"):
     super(Generator, self).__init__()
-    self.get_embedding = embedding
+    self.embedding = embedding
     self.ans_max_len = ans_max_len
-    self.vocab_size, self.embed_dim = self.get_embedding.weight.shape
+    self.vocab_size, self.embed_dim = self.embedding.weight.shape
     self.mode = mode
     self.pad_id = special_tokens["<PAD>"]
     self.bos_id = special_tokens["<BOS>"]

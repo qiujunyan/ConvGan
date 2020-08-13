@@ -25,9 +25,8 @@ class Trainer(nn.Module, DataLoader, Args):
     self.embedding = nn.Embedding(self.vocab_size, self.embed_dim,
                                   padding_idx=self.special_tokens[self.pad_tok])
     self.generator = Generator(self.embedding, self.ans_max_len, self.g_dropout,
-                               self.special_tokens, self.embed_dim, self.d_ff,
-                               self.g_num_layers, self.num_heads, self.n_times,
-                               device=self.device)
+                               self.special_tokens, self.d_ff, self.g_num_layers,
+                               self.num_heads, self.n_times, device=self.device)
     self.discriminator = Discriminator(self.embedding, device=self.device,
                                        seq_len=self.ans_max_len + self.dia_max_len)
     self.g_optim = optim.Adam(self.generator.parameters(), lr=self.g_lr0)
@@ -123,7 +122,6 @@ class Trainer(nn.Module, DataLoader, Args):
   def clip_grad_value(self, parameters, clip_value):
     t.nn.utils.clip_grad_value_(parameters, clip_value)
 
-
   def get_batch(self, index):
     start = index * self.batch_size
     end = min((index + 1) * self.batch_size, self.data_size)
@@ -217,6 +215,6 @@ class Trainer(nn.Module, DataLoader, Args):
 if __name__ == "__main__":
   print("data loaded...")
 
-  trainer = Trainer(mode="train")
+  trainer = Trainer()
   trainer()
   # trainer.inference("./model/model-2020-07-02_10-34-32/model-199")
