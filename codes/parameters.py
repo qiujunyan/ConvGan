@@ -1,11 +1,9 @@
 class Args(object):
   def __init__(self):
-    self.batch_size = 60
+    self.batch_size = 1
     self.epoch_num = 1000
-    self.embed_dim = 64
-    self.d_ff = 128
-    self.ans_max_len = 20
-    self.dia_max_len = 400
+    self.ans_max_len = 32
+    self.dia_max_len = 200
 
     self.pad_tok = "<PAD>"
     self.unkown_tok = "<UNKNOWN>"
@@ -21,11 +19,15 @@ class Args(object):
     self.channels = [16, 32]
     self.g_lr0 = 1e-3
     self.d_lr0 = 1e-3
-    self.g_dropout = 0.0
+    self.g_dropout = 0.1
     self.d_dropout = 0.0
+    self.g_num_layers = 3
+    self.embed_dim = 512
+    self.d_ff = 512
     self.device = "cuda:0"
     self.n_samples = 5
     self.n_times = 10
+    self.num_heads = 8
     self.reg_rate = 1e-3
     self.train_dir = "data/mutual/train/"
     self.dev_dir = "data/mutual/dev/"

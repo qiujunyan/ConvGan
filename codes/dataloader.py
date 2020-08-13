@@ -103,7 +103,8 @@ class DataLoader(Args):
         print("Dictionary file not found! Starting to regenerate.")
 
     diction = Counter()
-    for data in tqdm(self.data_tokens):
+    data_tokens = self.preprocess("data/mutual/train")
+    for data in tqdm(data_tokens):
       diction += Counter(data["dialogue"])
       diction += Counter(data["true_ans"])
       for item in data["wrong_ans"]:
@@ -158,36 +159,6 @@ class DataLoader(Args):
         max_len[key] = max(seq_lens[key])
       data_ids[key] = _seq_padding(data_ids[key], max_len[key])
     return data_ids, seq_lens
-
-  def statistic(self):
-    datas = self.data_tokens
-    data_size = len(self.data_tokens)
-    seq_lens = defaultdict(int)
-
-    diction = Counter()
-    for data in datas:
-      seq_lens[len(data)] += 1
-      diction += Counter(data)
-    seq_lens = dict(sorted(seq_lens.items(), key=lambda x: x[0]))
-
-    max_len = max(seq_lens.keys())
-    prop = {}
-    for i in range(max_len + 1):
-      if len(prop) == 0:
-        if i in seq_lens.keys():
-          prop[i] = seq_lens[i] / data_size
-        continue
-
-      seq_lens.setdefault(i, 0)
-      seq_lens[i] += seq_lens[i - 1]
-      prop[i] = seq_lens[i] / data_size
-
-    x = prop.keys()
-    y = prop.values()
-    plt.plot(x, y, '--')
-    plt.show()
-    pass
-
 
 if __name__ == "__main__":
   dl = DataLoader("data/mutual/train/")

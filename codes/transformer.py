@@ -1,6 +1,5 @@
-import copy
 import math
-
+import copy
 import torch as t
 from torch import nn
 
@@ -11,18 +10,28 @@ def clones(module, N):
 
 
 class Transformer(nn.Module):
-  def __init__(self, vocab_size, hidden_dim=64, d_ff=64,
-               num_heads=8, num_layers=6, dropout=0.1, pad_id=0):
+  def __init__(self, embedding, d_ff=64, num_heads=8,
+               num_layers=6, dropout=0.1, pad_id=0):
     super(Transformer, self).__init__()
+    self.embedding = embedding
+    vocab_size, hidden_dim = embedding.weight.size()
     self.pad_id = pad_id
     self.encoder = Encoder(hidden_dim, d_ff, num_heads, num_layers, dropout)
     self.decoder = Decoder(hidden_dim, vocab_size, d_ff, num_heads, num_layers, dropout)
 
-  def forward(self, src_embed, tgt_embed, src_mask, tgt_mask):
+  def forward(self, src, tgt, src_mask, tgt_mask):
+    src_embed = self.get_embedding(src)
+    tgt_embed = self.get_embedding(tgt)
     enc_output = self.encoder(src_embed, src_mask)
-    dec_output = self.decoder(tgt_embed, enc_output, enc_output, src_mask, tgt_mask)
+    dec_output = self.decoder(tgt_embed, enc_output, enc_output, tgt_mask, src_mask)
     return dec_output
 
+  def get_embedding(self, index, scale=True):
+    embedding = self.embedding(index)
+    embed_dim = self.embedding.weight.size(1)
+    if scale:
+      embedding = embedding * t.sqrt(embed_dim)
+    return embedding
 
 class Encoder(nn.Module):
   def __init__(self, hidden_dim, d_ff, num_heads, num_layers, dropout=0.0):
@@ -80,7 +89,7 @@ class MultiHeadAttention(nn.Module):
     self.num_heads = num_heads
     self.active_function = t.tanh
     self.layer_norm = LayerNormalization(hidden_dim, False)
-    self.linears = clones(nn.Linear(hidden_dim, hidden_dim), 4)
+    self.linears = clones(nn.Linear(hidden_dim, hidden_dim), 3)
     self.linear_out = nn.Linear(hidden_dim, hidden_dim)
 
   def forward(self, query, key, value, mask, seq_mask=False):
@@ -97,7 +106,6 @@ class MultiHeadAttention(nn.Module):
 
   def scaled_dot_production(self, Q, K, V, seq_mask, masks=None):
     attn_weight = t.matmul(Q, K.permute(0, 1, 3, 2)) / math.sqrt(self.hidden_dim)  # B * n * l_q * l_k
-    # attn_weight = self.layer_norm(attn_weight)
 
     l_q = Q.size(-2)
     # B * l_k -> B * n * l_q * l_k
@@ -127,8 +135,8 @@ class LayerNormalization(nn.Module):
     super(LayerNormalization, self).__init__()
     self.hidden_dim = hidden_dim
     if is_train:
-      self.alpha = nn.Parameter(t.ones(1))
-      self.beta = nn.Parameter(t.zeros(1))
+      self.alpha = nn.Parameter(t.ones(hidden_dim))
+      self.beta = nn.Parameter(t.zeros(hidden_dim))
     self.is_train = is_train
 
   def forward(self, inputs, epsilon=1e-8):
@@ -137,8 +145,7 @@ class LayerNormalization(nn.Module):
     mean = t.mean(inputs, -1)
     output = (inputs - mean.unsqueeze(-1)) / (sigma.unsqueeze(-1) + epsilon)
     if self.is_train:
-      output = self.alpha.repeat(size[-2], size[-1]) * output + \
-               self.beta.repeat(size[-2], size[-1])
+      output = self.alpha * output + self.beta
     return output
 
 

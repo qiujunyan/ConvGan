@@ -43,9 +43,9 @@ class Pretrain(Trainer):
   def batch_data_prep(self, index):
     start = index * self.bsize
     end = min((index + 1) * self.bsize, self.data_size)
-    answer = self.data_converter(self.ans_datas[start:end, :])
+    answer = self.data_converter(self.tgt[start:end, :])
     neg_answer = self.data_converter(self.neg_datas[start:end, :])
-    dialog = self.data_converter(self.dialog_datas[start:end, :])
+    dialog = self.data_converter(self.src[start:end, :])
     return answer, neg_answer, dialog
 
   def adjust_lr(self, iter, max_iter, min_lr=None, warmup=None, warmup_lr=1e-3, power=5):
