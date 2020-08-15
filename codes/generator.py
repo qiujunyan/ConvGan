@@ -1,6 +1,6 @@
 import torch as t
 from torch import nn
-
+import math
 from codes.transformer import Encoder, Decoder
 
 
@@ -43,9 +43,9 @@ class Generator(nn.Module):
     return tgt.to(self.device)
 
   def get_embedding(self, index, scale=True):
-    embedding = self.get_embedding(index)
+    embedding = self.embedding(index)
     if scale:
-      embedding = embedding * t.sqrt(self.embed_dim)
+      embedding = embedding * math.sqrt(self.embed_dim)
     return embedding
 
   def gen_whole_sequence(self, tgt, enc_output, num_samples=None):
@@ -58,46 +58,44 @@ class Generator(nn.Module):
   def sample_next_token(self, tgt, enc_output, num_samples=10):
     # TODO
     def _get_probs(dec_output, index):
-      assert dec_output.size(0) == index.size(0)
-      probs = t.zeros_like(index, dtype=t.float32)
       batch_size = dec_output.size(0)
-      for i in range(batch_size):
-        probs[i, :] = dec_output[i, index[i]]
-      return probs
+      batch_index = t.arange(batch_size).view(batch_size, -1)
+      return dec_output[batch_index, index]
 
     small_number = t.Tensor([1e-8]).to(device=self.device)
     dec_input = self.get_embedding(tgt)
+    tgt_mask = (tgt == self.pad_id)
     dec_output = self.decoder(dec_input, enc_output, enc_output,
-                              q_mask=self.src_mask, k_mask=self.tgt_mask,
-                              mode="decode").squeeze(1)
+                              q_mask=tgt_mask, k_mask=self.src_mask)
+    dec_output = dec_output[:, -1, :]  # last output token is needed
     num_samples = min(num_samples, self.vocab_size)
     next_token_index = t.multinomial(dec_output + small_number, num_samples)
 
     dec_seq_len = tgt.size(1)
     tgt = tgt.repeat([1, num_samples]).split(dec_seq_len, -1)
-    next_token_index = next_token_index.split(1, -1)
     probs = _get_probs(dec_output, next_token_index)
+    next_token_index = next_token_index.split(1, -1)
     return list(map(lambda x, y: t.cat([x, y], -1), tgt, next_token_index)), \
            probs.transpose(1, 0)
 
   def predict_next_token(self, tgt, enc_output, num_samples=None):
     dec_input = self.get_embedding(tgt)
+    tgt_mask = (tgt == self.pad_id)
     dec_output = self.decoder(dec_input, enc_output, enc_output,
-                              q_mask=self.src_mask, k_mask=self.tgt_mask,
-                              mode="decode")
+                              q_mask=tgt_mask, k_mask=self.src_mask)
     return t.argmax(dec_output, -1)
 
   def sample_whole_sequence(self, tgt, enc_output, num_samples=None):
     batch_size = enc_output.size(0)
-    bos_index = t.ones([batch_size, 1]) * self.bos_id
+    bos_index = t.ones([batch_size, 1], dtype=t.int64, device=self.device) * self.bos_id
     dec_input_index = bos_index
 
     for i in range(1, self.ans_max_len):
       dec_input = self.get_embedding(dec_input_index)
       tgt_mask = (dec_input_index == self.pad_id).to(device=self.device)
       dec_output = self.decoder(dec_input, enc_output, enc_output,
-                                q_mask=self.src_mask, k_mask=tgt_mask)  # B * 1 * V
-      dec_input_index = t.cat([bos_index, t.argmax(dec_output, 1)], -1)
+                                q_mask=tgt_mask, k_mask=self.src_mask)  # B * 1 * V
+      dec_input_index = t.cat([bos_index, t.argmax(dec_output, -1)], -1)
     return dec_input_index
 
 

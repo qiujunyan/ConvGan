@@ -33,6 +33,7 @@ class Transformer(nn.Module):
       embedding = embedding * math.sqrt(embed_dim)
     return embedding
 
+
 class Encoder(nn.Module):
   def __init__(self, hidden_dim, d_ff, num_heads, num_layers, dropout=0.0):
     super(Encoder, self).__init__()
@@ -45,7 +46,7 @@ class Encoder(nn.Module):
   def forward(self, query, mask=None):
     x = self.pe(query)
     for i in range(self.num_layers):
-      x = self.sublayers[0](x, lambda x: self.self_attn[i](x, x, x, mask))
+      x = self.sublayers[0](x, lambda x: self.self_attn[i](x, x, x, mask, mask))
       x = self.sublayers[1](x, self.feed_forward[i])
     return x
 
@@ -64,8 +65,8 @@ class Decoder(nn.Module):
   def forward(self, query, key, value, q_mask=None, k_mask=None):
     x = self.pe(query)
     for i in range(self.num_layers):
-      x = self.sublayers[0](x, lambda x: self.self_attn[i](x, x, x, q_mask, seq_mask=True))
-      x = self.sublayers[1](x, lambda x: self.src_attn[i](x, key, value, k_mask))
+      x = self.sublayers[0](x, lambda x: self.self_attn[i](x, x, x, q_mask, q_mask, seq_mask=True))
+      x = self.sublayers[1](x, lambda x: self.src_attn[i](x, key, value, q_mask, k_mask))
       x = self.sublayers[2](x, self.feed_forward[i])
     output = self.output_linear(x)
     return t.softmax(output, -1)
@@ -92,29 +93,38 @@ class MultiHeadAttention(nn.Module):
     self.linears = clones(nn.Linear(hidden_dim, hidden_dim), 3)
     self.linear_out = nn.Linear(hidden_dim, hidden_dim)
 
-  def forward(self, query, key, value, mask, seq_mask=False):
+  def forward(self, query, key, value, q_mask, k_mask, seq_mask=False):
     batch_size = query.size(0)
     #  B * L * d -> B * n * L * d/n
     query, key, value = \
       [linear(x).view(batch_size, -1, self.num_heads,
                       self.hidden_dim // self.num_heads).transpose(1, 2)
        for linear, x in zip(self.linears, (query, key, value))]
-    attention = self.scaled_dot_production(query, key, value, seq_mask, mask)  # B * n * l_q * d /n
+    attention = self.scaled_dot_production(query, key, value, q_mask, k_mask, seq_mask)  # B * n * l_q * d /n
     attention = attention.transpose(1, 2).contiguous(). \
       view(batch_size, -1, self.hidden_dim)
     return self.linear_out(attention)
 
-  def scaled_dot_production(self, Q, K, V, seq_mask, masks=None):
+  def scaled_dot_production(self, Q, K, V, q_mask, k_mask, seq_mask=False):
+    '''
+    :param q_mask: B * l_q
+    :param k_mask: B * l_k
+    :param seq_mask: if True, mask future tokens
+    :return:
+    '''
     attn_weight = t.matmul(Q, K.permute(0, 1, 3, 2)) / math.sqrt(self.hidden_dim)  # B * n * l_q * l_k
 
     l_q = Q.size(-2)
+    l_k = K.size(-2)
     # B * l_k -> B * n * l_q * l_k
-    masks = masks.unsqueeze(1).unsqueeze(2).repeat(1, self.num_heads, l_q, 1)
+    k_mask = k_mask.unsqueeze(1).unsqueeze(2).repeat(1, self.num_heads, l_q, 1)
     if seq_mask:
-      masks |= t.triu(t.ones_like(masks, dtype=t.uint8), diagonal=1)
-    if masks is not None:
-      masks = t.zeros_like(masks, dtype=t.float32).masked_fill_(masks, -1e32)
-      attn_weight = t.softmax(attn_weight + masks, -1)
+      k_mask |= t.triu(t.ones_like(k_mask, dtype=t.bool), diagonal=1)
+    k_mask = t.zeros_like(k_mask, dtype=t.float32).masked_fill_(k_mask, -1e32)
+    attn_weight = t.softmax(attn_weight + k_mask, -1)
+
+    q_mask = q_mask.unsqueeze(1).unsqueeze(-1).repeat(1, self.num_heads, 1, l_k)
+    attn_weight = attn_weight * (~q_mask).int()
     return t.matmul(attn_weight, V)
 
 
@@ -141,7 +151,10 @@ class LayerNormalization(nn.Module):
 
   def forward(self, inputs, epsilon=1e-8):
     size = inputs.size()
-    sigma = t.std(inputs, -1)
+    try:
+      sigma = t.std(inputs, -1)
+    except:
+      a = 1
     mean = t.mean(inputs, -1)
     output = (inputs - mean.unsqueeze(-1)) / (sigma.unsqueeze(-1) + epsilon)
     if self.is_train:
@@ -165,7 +178,10 @@ class PositionalEncoding(nn.Module):
     self.register_buffer('pe', pe)
 
   def forward(self, x):
-    x = x + self.pe[:, :x.size(1)] * self.rate
+    try:
+      x = x + self.pe[:, :x.size(1)] * self.rate
+    except:
+      a = 1
     return self.dropout(x)
 
 

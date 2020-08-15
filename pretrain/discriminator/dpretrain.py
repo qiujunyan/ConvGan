@@ -3,36 +3,37 @@ import time
 
 import numpy as np
 import torch as t
-
-from codes.parameters import args
+from torch import nn
+import math
+from codes.parameters import Args
 from codes.train import Trainer
 
 
 class Pretrain(Trainer):
-  def __init__(self, args):
-    super(Pretrain, self).__init__(args, mode="p")
-    self.g_lr0 = 0.1
-    self.neg_datas = np.array(self.data_loader.data_ids["wrong_ans"])
-    del (self.generator)
+  def __init__(self):
+    super(Pretrain, self).__init__(data_dir="data/mutual/dev")
+    self.neg_datas = t.LongTensor(self.data_ids["wrong_ans"]).to(self.device)
+    self.total_batch = math.ceil(self.data_size / self.batch_size)
 
   def forward(self):
     self.model_dir = os.path.join("./pretrain/discriminator/model", "model-{}".
                                   format(time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())))
-    self.load_discriminator("./pretrain/discriminator/model/model-2020-08-05_09-58-27/model-160-41")
+    # self.load_discriminator("./pretrain/discriminator/model/model-2020-08-05_09-58-27/model-160-41")
+    self.load_generator("./pretrain/generator/model/model-2020-08-14_11-36-59/model-250-0")
     if not os.path.isdir(self.model_dir):
       os.mkdir(self.model_dir)
-    self.record_file = os.path.join(self.model_dir, "record.txt")
+    self.record_file = os.path.join(self.model_dir, "log.txt")
     self.print_train_info()
     for epoch in range(self.epoch_num):
       self.train_one_epoch(epoch)
 
   def train_one_epoch(self, epoch):
-    self.lr = self.adjust_lr(self.d_lr0, epoch, self.epoch_num,
-                             warmup=50, warmup_lr=1e-3,
-                             power=10, min_lr=1e-7)
+    self.lr = self.adjust_lr(iter=epoch, max_iter=1000,
+                             warmup=0, warmup_lr=1e-3,
+                             power=10, min_lr=None)
     for batch in range(self.total_batch):
       self.d_optim.zero_grad()
-      answer, neg_answer, dialog = self.batch_data_prep(batch)
+      answer, neg_answer, dialog = self.get_batch(batch)
       loss, acc = self.discriminator(dialog, neg_answer, answer)
 
       loss.backward()
@@ -40,19 +41,19 @@ class Pretrain(Trainer):
     self.log_record(epoch, batch, loss, acc)
     self.model_save(epoch, batch)
 
-  def batch_data_prep(self, index):
-    start = index * self.bsize
-    end = min((index + 1) * self.bsize, self.data_size)
-    answer = self.data_converter(self.tgt[start:end, :])
-    neg_answer = self.data_converter(self.neg_datas[start:end, :])
-    dialog = self.data_converter(self.src[start:end, :])
+  def get_batch(self, index):
+    start = index * self.batch_size
+    end = min((index + 1) * self.batch_size, self.data_size)
+    answer = self.answer[start:end, :]
+    neg_answer = self.neg_datas[start:end, :]
+    dialog = self.dialog[start:end, :]
     return answer, neg_answer, dialog
 
   def adjust_lr(self, iter, max_iter, min_lr=None, warmup=None, warmup_lr=1e-3, power=5):
     if warmup is not None and iter < warmup:
       lr = warmup_lr
     else:
-      lr = self.lr0 * ((1 - float(iter) / max_iter) ** power)
+      lr = self.d_lr0 * ((1 - float(iter) / max_iter) ** power)
       if min_lr is not None:
         lr = max(min_lr, lr)
     self.d_optim.param_groups[0]["lr"] = lr
@@ -76,5 +77,5 @@ class Pretrain(Trainer):
 
 
 if __name__ == "__main__":
-  d_pretrain = Pretrain(args)
+  d_pretrain = Pretrain()
   d_pretrain()
