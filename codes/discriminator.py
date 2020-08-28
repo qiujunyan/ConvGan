@@ -3,9 +3,8 @@ from torch import nn
 
 
 class Discriminator(nn.Module):
-  def __init__(self, embedding, channels=[32, 16],
-               half_wnd_sizes=[3, 4, 5], pool_ksize=[1, 2],
-               seq_len=32, dropout_prob=0.5, device="cuda:0"):
+  def __init__(self, embedding, channels, half_wnd_sizes, pool_ksize,
+               seq_len, dropout_prob, device="cuda:0"):
     super(Discriminator, self).__init__()
     self.channels = channels
     self.wnd_sizes = list(map(lambda x: 2 * x + 1, half_wnd_sizes))
@@ -67,7 +66,7 @@ class Discriminator(nn.Module):
       conv_ksizes.append(tmp)
     return conv_ksizes
 
-  def data_process(self, dialog, neg_ans, ans=None):
+  def data_process(self, dialog, neg_ans, ans=None, balance_data=True):
     def _get_onehot(index):
       ret = t.eye(2, device=dialog.device)[index.long()]
       return ret
@@ -84,8 +83,11 @@ class Discriminator(nn.Module):
       # one correct answer will be followed by three
       # wrong answers.
       _, repeat_times, seq_len, model_dim = neg_ans.size()
+      if balance_data:
+        repeat_times = 1
       data2 = t.cat([dialog.repeat(repeat_times, 1, 1),
-                     neg_ans.transpose(1, 0).contiguous().view(-1, seq_len, model_dim)], 1)
+                     neg_ans.transpose(1, 0)[:repeat_times].
+                    contiguous().view(-1, seq_len, model_dim)], 1)
     data = t.cat([data1, data2], 0)
     labels = t.cat([t.ones(data1.size(0)), t.zeros(data2.size(0))], 0)
 

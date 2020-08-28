@@ -26,6 +26,13 @@ class Transformer(nn.Module):
     dec_output = self.decoder(tgt_embed, enc_output, enc_output, tgt_mask, src_mask)
     return dec_output
 
+  def classify(self, src, tgt, src_mask, tgt_mask):
+    src_embed = self.get_embedding(src)
+    tgt_embed = self.get_embedding(tgt)
+    enc_output = self.encoder(src_embed, src_mask)
+    dec_output = self.decoder.classify(tgt_embed, enc_output, enc_output, tgt_mask, src_mask)
+    return dec_output
+
   def get_embedding(self, index, scale=True):
     embedding = self.embedding(index)
     embed_dim = self.embedding.weight.size(1)
@@ -61,6 +68,7 @@ class Decoder(nn.Module):
     self.src_attn = clones(MultiHeadAttention(hidden_dim, num_heads), num_layers)
     self.feed_forward = clones(FeedForward(hidden_dim, d_ff), num_layers)
     self.output_linear = nn.Linear(hidden_dim, vocab_size)
+    self.class_linear = nn.Linear(hidden_dim, 2)
 
   def forward(self, query, key, value, q_mask=None, k_mask=None):
     x = self.pe(query)
@@ -69,6 +77,15 @@ class Decoder(nn.Module):
       x = self.sublayers[1](x, lambda x: self.src_attn[i](x, key, value, q_mask, k_mask))
       x = self.sublayers[2](x, self.feed_forward[i])
     output = self.output_linear(x)
+    return t.softmax(output, -1)
+
+  def classify(self, query, key, value, q_mask=None, k_mask=None):
+    x = self.pe(query)
+    for i in range(self.num_layers):
+      x = self.sublayers[0](x, lambda x: self.self_attn[i](x, x, x, q_mask, q_mask, seq_mask=True))
+      x = self.sublayers[1](x, lambda x: self.src_attn[i](x, key, value, q_mask, k_mask))
+      x = self.sublayers[2](x, self.feed_forward[i])
+    output = self.class_linear(x)
     return t.softmax(output, -1)
 
 
@@ -119,12 +136,12 @@ class MultiHeadAttention(nn.Module):
     # B * l_k -> B * n * l_q * l_k
     k_mask = k_mask.unsqueeze(1).unsqueeze(2).repeat(1, self.num_heads, l_q, 1)
     if seq_mask:
-      k_mask |= t.triu(t.ones_like(k_mask, dtype=t.bool), diagonal=1)
+      k_mask |= t.triu(t.ones_like(k_mask, dtype=t.uint8), diagonal=1)
     k_mask = t.zeros_like(k_mask, dtype=t.float32).masked_fill_(k_mask, -1e32)
     attn_weight = t.softmax(attn_weight + k_mask, -1)
 
     q_mask = q_mask.unsqueeze(1).unsqueeze(-1).repeat(1, self.num_heads, 1, l_k)
-    attn_weight = attn_weight * (~q_mask).int()
+    attn_weight = attn_weight * (~q_mask).float()
     return t.matmul(attn_weight, V)
 
 

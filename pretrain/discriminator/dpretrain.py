@@ -11,14 +11,18 @@ from codes.train import Trainer
 
 class Pretrain(Trainer):
   def __init__(self):
-    super(Pretrain, self).__init__(data_dir="data/mutual/dev")
+    super(Pretrain, self).__init__(data_dir="data/mutual/train")
+    self.epoch_num = 10
+    self.d_lr0 = 1e-3
+    self.batch_size = 32
     self.neg_datas = t.LongTensor(self.data_ids["wrong_ans"]).to(self.device)
     self.total_batch = math.ceil(self.data_size / self.batch_size)
+    # self.total_batch = 1
 
   def forward(self):
     self.model_dir = os.path.join("./pretrain/discriminator/model", "model-{}".
                                   format(time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())))
-    # self.load_discriminator("./pretrain/discriminator/model/model-2020-08-05_09-58-27/model-160-41")
+    self.load_discriminator("./pretrain/discriminator/model/model-2020-08-19_10-06-15/model-10-27")
     self.load_generator("./pretrain/generator/model/model-2020-08-14_11-36-59/model-250-0")
     if not os.path.isdir(self.model_dir):
       os.mkdir(self.model_dir)
@@ -39,7 +43,8 @@ class Pretrain(Trainer):
       loss.backward()
       self.d_optim.step()
     self.log_record(epoch, batch, loss, acc)
-    self.model_save(epoch, batch)
+    if epoch % 10 == 0:
+      self.model_save(epoch, batch)
 
   def get_batch(self, index):
     start = index * self.batch_size
@@ -47,6 +52,8 @@ class Pretrain(Trainer):
     answer = self.answer[start:end, :]
     neg_answer = self.neg_datas[start:end, :]
     dialog = self.dialog[start:end, :]
+
+    neg_answer = self.generator(dialog, )
     return answer, neg_answer, dialog
 
   def adjust_lr(self, iter, max_iter, min_lr=None, warmup=None, warmup_lr=1e-3, power=5):

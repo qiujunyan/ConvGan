@@ -5,17 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0c22aeeb-5c81-47ad-b574-f102d64f24ed" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/codes/dataloader.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes/dataloader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codes/generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes/generator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/data_loader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/codes/discriminator.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes/discriminator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/codes/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/codes/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes/train.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/codes/transformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes/transformer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/dataloader.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/embedding/dict.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/data/embedding/dict.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pretrain/discriminator/dpretrain.py" beforeDir="false" afterPath="$PROJECT_DIR$/pretrain/discriminator/dpretrain.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pretrain/generator/PretrainGen.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pretrain/generator/gpretrain.py" beforeDir="false" afterPath="$PROJECT_DIR$/pretrain/generator/gpretrain.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pretrain/generator/test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,37 +23,35 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/SeqGan$train.coverage" NAME="train Coverage Results" MODIFIED="1597111214859" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/SeqGan$train.coverage" NAME="train Coverage Results" MODIFIED="1597336797675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/codes" />
     <SUITE FILE_PATH="coverage/SeqGan$discriminator.coverage" NAME="discriminator Coverage Results" MODIFIED="1595385146043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/codes" />
-    <SUITE FILE_PATH="coverage/SeqGan$test.coverage" NAME="test Coverage Results" MODIFIED="1597219149528" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
+    <SUITE FILE_PATH="coverage/SeqGan$data_loader.coverage" NAME="data_loader Coverage Results" MODIFIED="1597809543075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/SeqGan$test.coverage" NAME="test Coverage Results" MODIFIED="1597633879525" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/SeqGan$dataloader.coverage" NAME="dataloader Coverage Results" MODIFIED="1597117999707" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/SeqGan$pretrain.coverage" NAME="pretrain Coverage Results" MODIFIED="1596558499367" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pretrain" />
     <SUITE FILE_PATH="coverage/SeqGan$PretrainGen.coverage" NAME="PretrainGen Coverage Results" MODIFIED="1597133711973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/SeqGan$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1597323769443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/SeqGan$dpretrain.coverage" NAME="dpretrain Coverage Results" MODIFIED="1596726682330" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/SeqGan$dpretrain.coverage" NAME="dpretrain Coverage Results" MODIFIED="1597802963439" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/SeqGan$preprocess.coverage" NAME="preprocess Coverage Results" MODIFIED="1597222840570" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data/mutual" />
-    <SUITE FILE_PATH="coverage/SeqGan$gpretrain.coverage" NAME="gpretrain Coverage Results" MODIFIED="1597325197886" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/SeqGan$gpretrain.coverage" NAME="gpretrain Coverage Results" MODIFIED="1597803702855" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/SeqGan$dataloader__1_.coverage" NAME="dataloader (1) Coverage Results" MODIFIED="1597069276898" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/codes/train.py">
+        <entry file="file://$PROJECT_DIR$/codes/generator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="143" column="35" lean-forward="true" selection-start-line="143" selection-start-column="35" selection-end-line="143" selection-end-column="35" />
-              <folding>
-                <element signature="e#0#11#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="128">
+              <caret line="87" column="22" selection-start-line="87" selection-start-column="22" selection-end-line="87" selection-end-column="22" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/codes/generator.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/test/data_loader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="464">
-              <caret line="99" column="29" selection-start-line="99" selection-start-column="29" selection-end-line="99" selection-end-column="29" />
+            <state relative-caret-position="144">
+              <caret line="8" column="49" lean-forward="true" selection-start-line="8" selection-start-column="49" selection-end-line="8" selection-end-column="49" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
@@ -63,34 +60,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/codes/transformer.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="165" lean-forward="true" selection-start-line="165" selection-end-line="165" />
-              <folding>
-                <element signature="e#0#11#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pretrain/generator/gpretrain.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="12" column="36" lean-forward="true" selection-start-line="12" selection-start-column="36" selection-end-line="12" selection-end-column="36" />
-              <folding>
-                <element signature="e#0#11#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pretrain/discriminator/dpretrain.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="15" column="24" lean-forward="true" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+            <state relative-caret-position="108">
+              <caret line="45" column="23" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -99,10 +72,34 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/codes/parameters.py">
+        <entry file="file://$PROJECT_DIR$/codes/train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="252">
-              <caret line="23" column="25" selection-start-line="23" selection-start-column="25" selection-end-line="23" selection-end-column="25" />
+            <state relative-caret-position="285">
+              <caret line="148" column="49" lean-forward="true" selection-start-line="148" selection-start-column="49" selection-end-line="148" selection-end-column="49" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/codes/transformer.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="335">
+              <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/codes/dataloader.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="159">
+              <caret line="153" column="37" selection-start-line="153" selection-start-column="37" selection-end-line="153" selection-end-column="37" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -110,11 +107,32 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/codes/discriminator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
+            <state relative-caret-position="270">
+              <caret line="27" column="37" selection-start-line="27" selection-start-column="37" selection-end-line="27" selection-end-column="37" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pretrain/generator/gpretrain.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="245">
+              <caret line="16" column="73" selection-start-line="16" selection-start-column="73" selection-end-line="16" selection-end-column="73" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/codes/parameters.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="54">
+              <caret line="3" column="25" selection-start-line="3" selection-start-column="21" selection-end-line="3" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -161,6 +179,7 @@
     </findStrings>
   </component>
   <component name="Git.Settings">
+    <option name="UPDATE_TYPE" value="MERGE" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
@@ -170,6 +189,7 @@
     <setting file="file://$PROJECT_DIR$/codes/train.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/codes/discriminator.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/codes/transformer.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/test/data_loader.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/pretrain/generator/gpretrain.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/data/mutual/data/dev.json" root0="SKIP_INSPECTION" />
   </component>
@@ -181,27 +201,29 @@
         <option value="$PROJECT_DIR$/codes/bleu.py" />
         <option value="$PROJECT_DIR$/pretrain/pretrain.py" />
         <option value="$PROJECT_DIR$/model/model-2020-08-07_00-30-31/record.txt" />
-        <option value="$PROJECT_DIR$/pretrain/discriminator/dpretrain.py" />
-        <option value="$PROJECT_DIR$/codes/discriminator.py" />
         <option value="$PROJECT_DIR$/data/constants.py" />
         <option value="$PROJECT_DIR$/data/preprocess.py" />
         <option value="$PROJECT_DIR$/data/dataloader.py" />
         <option value="$PROJECT_DIR$/pretrain/generator/PretrainGen.py" />
-        <option value="$PROJECT_DIR$/test/test.py" />
-        <option value="$PROJECT_DIR$/codes/dataloader.py" />
         <option value="$PROJECT_DIR$/data/mutual/preprocess.py" />
-        <option value="$PROJECT_DIR$/codes/parameters.py" />
-        <option value="$PROJECT_DIR$/codes/train.py" />
         <option value="$PROJECT_DIR$/codes/transformer_old.py" />
-        <option value="$PROJECT_DIR$/codes/generator.py" />
-        <option value="$PROJECT_DIR$/codes/transformer.py" />
         <option value="$PROJECT_DIR$/pretrain/generator/test.py" />
+        <option value="$PROJECT_DIR$/codes/dataloader.py" />
+        <option value="$PROJECT_DIR$/codes/generator.py" />
+        <option value="$PROJECT_DIR$/codes/parameters.py" />
+        <option value="$PROJECT_DIR$/pretrain/discriminator/dpretrain.py" />
+        <option value="$PROJECT_DIR$/codes/discriminator.py" />
+        <option value="$PROJECT_DIR$/codes/train.py" />
         <option value="$PROJECT_DIR$/pretrain/generator/gpretrain.py" />
+        <option value="$PROJECT_DIR$/test/test.py" />
+        <option value="$PROJECT_DIR$/test/data_lader.py" />
+        <option value="$PROJECT_DIR$/codes/transformer.py" />
+        <option value="$PROJECT_DIR$/test/data_loader.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="747" />
+    <option name="x" value="745" />
     <option name="y" value="90" />
     <option name="width" value="980" />
     <option name="height" value="1040" />
@@ -215,7 +237,64 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="ProjectPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="SeqGan" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SeqGan" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SeqGan" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SeqGan" type="462c0819:PsiDirectoryNode" />
+              <item name="codes" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SeqGan" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SeqGan" type="462c0819:PsiDirectoryNode" />
+              <item name="pretrain" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SeqGan" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SeqGan" type="462c0819:PsiDirectoryNode" />
+              <item name="pretrain" type="462c0819:PsiDirectoryNode" />
+              <item name="discriminator" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SeqGan" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SeqGan" type="462c0819:PsiDirectoryNode" />
+              <item name="pretrain" type="462c0819:PsiDirectoryNode" />
+              <item name="discriminator" type="462c0819:PsiDirectoryNode" />
+              <item name="model" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SeqGan" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SeqGan" type="462c0819:PsiDirectoryNode" />
+              <item name="pretrain" type="462c0819:PsiDirectoryNode" />
+              <item name="generator" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SeqGan" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SeqGan" type="462c0819:PsiDirectoryNode" />
+              <item name="pretrain" type="462c0819:PsiDirectoryNode" />
+              <item name="generator" type="462c0819:PsiDirectoryNode" />
+              <item name="model" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SeqGan" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SeqGan" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SeqGan" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SeqGan" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -255,8 +334,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.gpretrain">
-    <configuration name="PretrainGen" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.data_loader">
+    <configuration name="data_loader" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SeqGan" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -269,7 +348,29 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pretrain/generator/PretrainGen.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test/data_loader.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="dpretrain" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="SeqGan" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pretrain/discriminator/dpretrain.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -300,50 +401,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="preprocess" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="SeqGan" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/data/mutual" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/data/mutual/preprocess.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="SeqGan" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pretrain/generator/test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SeqGan" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -366,20 +423,42 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="train" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="SeqGan" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/codes" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/codes/train.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.gpretrain" />
-      <item itemvalue="Python.PretrainGen" />
+      <item itemvalue="Python.train" />
+      <item itemvalue="Python.dpretrain" />
       <item itemvalue="Python.test" />
-      <item itemvalue="Python.test (1)" />
-      <item itemvalue="Python.preprocess" />
+      <item itemvalue="Python.data_loader" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.data_loader" />
         <item itemvalue="Python.gpretrain" />
-        <item itemvalue="Python.test (1)" />
-        <item itemvalue="Python.preprocess" />
+        <item itemvalue="Python.dpretrain" />
         <item itemvalue="Python.test" />
-        <item itemvalue="Python.PretrainGen" />
+        <item itemvalue="Python.train" />
       </list>
     </recent_temporary>
   </component>
@@ -401,12 +480,14 @@
       <workItem from="1595744711398" duration="118215000" />
       <workItem from="1596274881332" duration="22794000" />
       <workItem from="1596441595216" duration="219362000" />
-      <workItem from="1597072357281" duration="86260000" />
+      <workItem from="1597072357281" duration="91273000" />
+      <workItem from="1597456395061" duration="11959000" />
+      <workItem from="1597799697263" duration="13588000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="540791000" />
+    <option name="totallyTimeSpent" value="571351000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -419,31 +500,31 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49868074" visible="true" weight="0.18516043" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49868074" visible="true" weight="0.17379679" />
       <window_info id="Favorites" order="1" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32911393" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49799466" weight="0.47257385" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49799466" visible="true" weight="0.4092827" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32911393" />
-      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32911393" />
-      <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50200534" side_tool="true" weight="0.24331927" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32630098" />
-      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.49799466" weight="0.24331927" />
+      <window_info anchor="bottom" id="Concurrent Activities Diagram" order="0" weight="0.32911393" />
+      <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" weight="0.32911393" />
+      <window_info anchor="bottom" id="Run" order="3" sideWeight="0.49799466" weight="0.47257385" />
+      <window_info active="true" anchor="bottom" id="Debug" order="4" sideWeight="0.49799466" visible="true" weight="0.27004218" />
+      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="7" weight="0.32911393" />
+      <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32911393" />
+      <window_info anchor="bottom" id="Database Changes" order="10" />
+      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50200534" side_tool="true" weight="0.24331927" />
+      <window_info anchor="bottom" id="Terminal" order="12" weight="0.23628692" />
+      <window_info anchor="bottom" id="Python Console" order="13" sideWeight="0.49799466" weight="0.24331927" />
       <window_info anchor="right" id="Coverage" order="0" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="1" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
       <window_info anchor="right" id="Remote Host" order="4" weight="0.32954547" />
-      <window_info anchor="right" id="SciView" order="5" sideWeight="0.7669903" weight="0.21256684" />
+      <window_info anchor="right" id="SciView" order="5" sideWeight="0.50199205" weight="0.19385026" />
       <window_info anchor="right" id="Database" order="6" />
-      <window_info anchor="right" x="625" y="317" width="285" height="189" id="Structure" order="7" sideWeight="0.23300971" side_tool="true" visible="true" weight="0.16644385" />
+      <window_info anchor="right" x="625" y="317" width="285" height="189" id="Structure" order="7" sideWeight="0.49800798" side_tool="true" visible="true" weight="0.19385026" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -452,10 +533,15 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/test/test.py</url>
-          <line>140</line>
-          <option name="timeStamp" value="586" />
+          <line>4</line>
+          <option name="timeStamp" value="591" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/codes/discriminator.py</url>
+          <line>25</line>
+          <option name="timeStamp" value="600" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-defaults>
@@ -478,6 +564,46 @@
   <component name="debuggerHistoryManager">
     <expressions id="evaluateCodeFragment">
       <expression>
+        <expression-string>list(map(lambda i: t.cat([t.ones(1, dtype=t.int64) * self.bos,
+                                  t.randint(0, self.vocab_size, [lens[i]]),
+                                  t.ones(max_len - lens[i], dtype=t.int64)* self.pad,
+                                  t.ones(1, dtype=t.int64) * self.eos], 0), range(lens.size(0))))</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>list(map(lambda i: t.cat([t.ones(1) * self.bos,
+                                  t.randint(0, self.vocab_size, [lens[i]]),
+                                  t.ones(max_len - lens[i]) * self.pad,
+                                  t.ones(1) * self.eos], 0), range(lens.size(0))))</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>list(map(lambda i: t.cat([t.one(1) * self.bos,
+                                  t.randint(0, self.vocab_size, [lens[i]]),
+                                  t.ones(max_len - lens[i]) * self.pad,
+                                  t.ones(1) * self.eos], 0), range(lens.size(0))))</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>list(lambda i: t.cat([t.one(1) * self.bos,
+                                  t.randint(0, self.vocab_size, [lens[i]]),
+                                  t.ones(max_len - lens[i]) * self.pad,
+                                  t.ones(1) * self.eos], 0), range(lens.size(0)))</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>list(lambda i: t.cat([t.one(1) * self.bos,
+                                  t.randint(0, self.vocab_size, [lens[i]]),
+                                  t.ones(max_len - lens[i]) * self.pad,
+                                  t.ones(1) * self.eos], 0), range(lens.size(0))</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
         <expression-string>list(filter(lambda x: t.isnan(t.sum(x[1].grad)), self.generator.named_parameters()))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
@@ -496,12 +622,6 @@
       <expression>
         <expression-string>self.decoder(self.embedding(init_dec_input_index[:, :i + 1]),
                                         enc_output, enc_output, mode=&quot;decode&quot;)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>t.cat([init_dec_input_index,
-                            t.ones(batch_size, self.ans_max_len - dec_seq_len, dtype=t.int64) * self.pad_id], 1)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
@@ -572,60 +692,53 @@
     </expressions>
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>true_data != self.special_tokens[self.pad_tok]</expression-string>
+        <expression-string>acc</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>true_data != self.special_tokens[self.pad_tok])</expression-string>
+        <expression-string>t.argmax(logits, -1)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>true_data</expression-string>
+        <expression-string>logits</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>gen_data</expression-string>
+        <expression-string>neg_ans.transpose(1, 0)[0].shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>tgt</expression-string>
+        <expression-string>neg_ans.transpose(1, 0)[0]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>labels</expression-string>
+        <expression-string>neg_ans.transpose(1, 0)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>gen_sents</expression-string>
+        <expression-string>data1.shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>((gen_data == true_data)&amp;(true_data != self.special_tokens[self.pad_tok])).float()</expression-string>
+        <expression-string>data2.shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>list(self.named_parameters())</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>src</expression-string>
+        <expression-string>data2</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/model/model-2020-08-06_23-55-01/record.txt" />
-    <entry file="file://$PROJECT_DIR$/model/model-2020-08-07_10-08-39/record.txt" />
     <entry file="file://$PROJECT_DIR$/pretrain/generator/model/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -680,38 +793,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/dataloader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="9" column="31" lean-forward="true" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#32#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/data/dataloader.py" />
     <entry file="file://$PROJECT_DIR$/data/mutual/data/test.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/data/mutual/data/train.json">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/codes/dataloader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1633">
-          <caret line="106" column="34" selection-start-line="106" selection-start-column="34" selection-end-line="106" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Python/Anaconda/setup_3.6/Lib/site-packages/torch/nn/modules/module.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="492" selection-start-line="492" selection-end-line="492" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -740,65 +827,84 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/log/log2020-08-12_17-37-54">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-12_21-48-07/record.txt">
+    <entry file="file://$PROJECT_DIR$/test/log/log2020-08-12_17-37-54" />
+    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-12_21-48-07/record.txt" />
+    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-12_21-41-55/record.txt" />
+    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-12_21-36-26/record.txt" />
+    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-13_00-08-06/record.txt" />
+    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-12_18-19-35/record.txt" />
+    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-13_21-17-15/record.txt" />
+    <entry file="file://$PROJECT_DIR$/codes/transformer_old.py" />
+    <entry file="file://$PROJECT_DIR$/pretrain/generator/PretrainGen.py" />
+    <entry file="file://$PROJECT_DIR$/pretrain/generator/test.py" />
+    <entry file="file://D:/Python/Anaconda/setup_3.6/Lib/site-packages/torch/nn/modules/module.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1512" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-12_21-41-55/record.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-372" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-12_21-36-26/record.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="702">
-          <caret line="78" column="48" selection-start-line="78" selection-start-column="48" selection-end-line="78" selection-end-column="48" />
+        <state relative-caret-position="8730">
+          <caret line="492" selection-start-line="492" selection-end-line="492" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-13_00-08-06/record.txt">
+    <entry file="file://$PROJECT_DIR$/codes/dataloader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-12741" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/codes/discriminator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#17#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-12_18-19-35/record.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5274">
-          <caret line="13" column="22" selection-start-line="13" selection-start-column="22" selection-end-line="13" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="367">
-          <caret line="55" column="20" selection-start-line="55" selection-start-column="20" selection-end-line="55" selection-end-column="20" />
+        <state relative-caret-position="159">
+          <caret line="153" column="37" selection-start-line="153" selection-start-column="37" selection-end-line="153" selection-end-column="37" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/generator/model/model-2020-08-13_21-17-15/record.txt">
+    <entry file="file://$PROJECT_DIR$/codes/discriminator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="27" column="37" selection-start-line="27" selection-start-column="37" selection-end-line="27" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/codes/parameters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="3" column="25" selection-start-line="3" selection-start-column="21" selection-end-line="3" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/data_lader.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/codes/transformer_old.py">
+    <entry file="file://$PROJECT_DIR$/pretrain/discriminator/dpretrain.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="103" column="43" lean-forward="true" selection-start-line="103" selection-start-column="43" selection-end-line="103" selection-end-column="43" />
+        <state relative-caret-position="108">
+          <caret line="45" column="23" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" selection-end-line="4" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/codes/generator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="87" column="22" selection-start-line="87" selection-start-column="22" selection-end-line="87" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pretrain/generator/gpretrain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="16" column="73" selection-start-line="16" selection-start-column="73" selection-end-line="16" selection-end-column="73" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -807,74 +913,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/codes/transformer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="165" lean-forward="true" selection-start-line="165" selection-end-line="165" />
+        <state relative-caret-position="335">
+          <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/codes/generator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="464">
-          <caret line="99" column="29" selection-start-line="99" selection-start-column="29" selection-end-line="99" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#17#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/codes/train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="143" column="35" lean-forward="true" selection-start-line="143" selection-start-column="35" selection-end-line="143" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="285">
+          <caret line="148" column="49" lean-forward="true" selection-start-line="148" selection-start-column="49" selection-end-line="148" selection-end-column="49" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/generator/PretrainGen.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="774">
-          <caret line="43" selection-start-line="43" selection-end-line="43" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/codes/parameters.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="23" column="25" selection-start-line="23" selection-start-column="25" selection-end-line="23" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/generator/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1170">
-          <caret line="4" column="20" lean-forward="true" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/generator/gpretrain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="36" lean-forward="true" selection-start-line="12" selection-start-column="36" selection-end-line="12" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pretrain/discriminator/dpretrain.py">
+    <entry file="file://$PROJECT_DIR$/test/data_loader.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
-          <caret line="15" column="24" lean-forward="true" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+          <caret line="8" column="49" lean-forward="true" selection-start-line="8" selection-start-column="49" selection-end-line="8" selection-end-column="49" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#17#0" expanded="true" />
           </folding>
         </state>
       </provider>

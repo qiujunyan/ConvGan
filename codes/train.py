@@ -30,17 +30,17 @@ class Trainer(nn.Module, DataLoader, Args):
     self.generator = Generator(self.embedding, self.ans_max_len, self.g_dropout,
                                self.special_tokens, self.d_ff, self.g_num_layers,
                                self.num_heads, self.n_times, device=self.device)
-    self.discriminator = Discriminator(self.embedding,
-                                       seq_len=self.ans_max_len + self.dia_max_len,
-                                       device=self.device)
+    self.discriminator = Discriminator(self.embedding, self.channels, self.half_wnd_sizes,
+                                       self.pool_ksize, self.ans_max_len + self.dia_max_len,
+                                       self.d_dropout, device=self.device)
     self.g_optim = optim.Adam(self.generator.parameters(), lr=self.g_lr0)
     self.d_optim = optim.Adam(self.discriminator.parameters(), lr=self.d_lr0)
-    # self.init_params()
+    self.init_params()
     self = self.to(self.device)
 
   def forward(self):
     self.load_generator("./pretrain/generator/model/model-2020-08-14_19-07-52/model-200-0")
-    self.load_discriminator("./pretrain/discriminator/model/model-2020-08-14_13-48-29/model-99-27")
+    # self.load_discriminator("./pretrain/discriminator/model/model-2020-08-14_13-48-29/model-99-27")
     self.model_dir = os.path.join("model", "model-{}".
                                   format(time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())))
     if not os.path.isdir(self.model_dir):
@@ -103,15 +103,15 @@ class Trainer(nn.Module, DataLoader, Args):
         self.g_optim.step()
         print("({}: {:.3})".format(i, neg_state_value.item()), end=" ")
 
+      #  discriminator training round
+      print("\n")
       gen_sents = self.generator(src=src, src_mask=src_mask, mode=3)
+      loss, d_acc = self.discriminator(src, gen_sents.detach(), tgt)
+      self.d_optim.zero_grad()
+      loss.backward()
+      self.d_optim.step()
 
-    #  discriminator training round
-    print("\n")
-    self.d_optim.zero_grad()
-    loss, d_acc = self.discriminator(src, gen_sents.detach(), tgt)
-    loss.backward()
-    self.d_optim.step()
-    _ = self.adjust_lr(self.d_lr0, self.g_optim, self.total_batch * epoch + batch,
+    _ = self.adjust_lr(self.d_lr0, self.d_optim, self.total_batch * epoch + batch,
                        self.total_batch * self.epoch_num)
 
     g_acc = self.get_accuracy(gen_sents, tgt)
@@ -161,7 +161,8 @@ class Trainer(nn.Module, DataLoader, Args):
       if attr_name.startswith("_"):
         continue
       attr_value = getattr(self, attr_name)
-      if isinstance(attr_value, base_type):
+      if isinstance(attr_value, base_type) or \
+          isinstance(attr_value, list) and len(attr_value) < 5:
         record_info[attr_name] = attr_value
 
     pprint.pprint(record_info)

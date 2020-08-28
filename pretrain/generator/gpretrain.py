@@ -16,6 +16,11 @@ class PreTrainer(Trainer):
                                  pad_id=self.special_tokens[self.pad_tok]).to(device=self.device)
     self.g_optim = optim.Adam(self.generator.parameters(), lr=self.g_lr0)
     self.power = 10
+    self.batch_size = 10
+    self.epoch_num = 200
+    self.g_lr0 = 1e-4
+    self.warmup = 1
+    self.warmup_lr = 1e-5
 
   def forward(self):
     print("*" * 20 + "device: {}".format(self.device) + "*" * 20)
@@ -40,8 +45,8 @@ class PreTrainer(Trainer):
     for batch in range(self.total_batch):
       src, tgt, src_mask, tgt_mask, ans_lens = self.get_batch(batch)
       self.lr = self.adjust_lr(self.g_lr0, self.g_optim,
-                               epoch, self.epoch_num, min_lr=None,
-                               warmup=30, warmup_lr=1e-6, power=self.power)
+                               epoch, 1000, min_lr=None,
+                               warmup=self.warmup, warmup_lr=self.warmup_lr, power=self.power)
       logits = self.generator(src, tgt, src_mask, tgt_mask)
       gen_sents = t.argmax(logits, -1)
       loss = self.get_celoss(tgt[:, 1:], logits[:, :-1], self.generator.parameters())
